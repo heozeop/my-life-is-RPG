@@ -55,9 +55,11 @@ dependencies {
     
     // Test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers") 
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.h2database:h2") // For testing
+    testImplementation("org.hamcrest:hamcrest:2.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

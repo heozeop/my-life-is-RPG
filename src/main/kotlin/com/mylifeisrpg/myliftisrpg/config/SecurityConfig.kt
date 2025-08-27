@@ -2,6 +2,7 @@ package com.mylifeisrpg.myliftisrpg.config
 
 import com.mylifeisrpg.myliftisrpg.security.ApiKeyAuthenticationFilter
 import com.mylifeisrpg.myliftisrpg.security.DatabaseApiKeyAuthenticationProvider
+import com.mylifeisrpg.myliftisrpg.security.AuthenticationLoggingFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
@@ -15,11 +16,14 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
+import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val databaseApiKeyAuthenticationProvider: DatabaseApiKeyAuthenticationProvider
+    private val databaseApiKeyAuthenticationProvider: DatabaseApiKeyAuthenticationProvider,
+    private val authenticationLoggingFilter: AuthenticationLoggingFilter
 ) {
 
     @Bean
@@ -49,6 +53,21 @@ class SecurityConfig(
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .addFilterBefore(apiKeyAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(authenticationLoggingFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .headers { headers ->
+                headers
+                    .frameOptions { frameOptions -> frameOptions.deny() }
+                    .contentTypeOptions { }
+                    .referrerPolicy { referrerPolicy ->
+                        referrerPolicy.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
+                    }
+                    .httpStrictTransportSecurity { hstsConfig ->
+                        hstsConfig
+                            .maxAgeInSeconds(31536000)
+                            .includeSubDomains(true)
+                            .preload(true)
+                    }
+            }
             .exceptionHandling { exceptions ->
                 exceptions.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
             }
