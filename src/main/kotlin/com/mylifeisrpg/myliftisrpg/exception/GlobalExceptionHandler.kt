@@ -2,11 +2,16 @@ package com.mylifeisrpg.myliftisrpg.exception
 
 import com.mylifeisrpg.myliftisrpg.service.UnauthenticatedException
 import com.mylifeisrpg.myliftisrpg.service.InsufficientPermissionsException
+import com.mylifeisrpg.myliftisrpg.exception.UserAlreadyExistsException
+import com.mylifeisrpg.myliftisrpg.exception.InvalidCredentialsException
+import com.mylifeisrpg.myliftisrpg.exception.UserNotFoundException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.AuthenticationException
+import org.springframework.validation.FieldError
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import java.time.LocalDateTime
@@ -72,6 +77,70 @@ class GlobalExceptionHandler {
             )
     }
 
+    @ExceptionHandler(UserAlreadyExistsException::class)
+    fun handleUserAlreadyExists(e: UserAlreadyExistsException): ResponseEntity<ErrorResponse> {
+        logger.warn("User registration conflict: ${e.message}")
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+            .body(
+                ErrorResponse(
+                    status = HttpStatus.CONFLICT.value(),
+                    error = "Conflict",
+                    message = e.message ?: "Username already exists",
+                    timestamp = LocalDateTime.now()
+                )
+            )
+    }
+
+    @ExceptionHandler(InvalidCredentialsException::class)
+    fun handleInvalidCredentials(e: InvalidCredentialsException): ResponseEntity<ErrorResponse> {
+        logger.warn("Invalid credentials: ${e.message}")
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(
+                ErrorResponse(
+                    status = HttpStatus.UNAUTHORIZED.value(),
+                    error = "Unauthorized",
+                    message = "Invalid username or password",
+                    timestamp = LocalDateTime.now()
+                )
+            )
+    }
+
+    @ExceptionHandler(UserNotFoundException::class)
+    fun handleUserNotFound(e: UserNotFoundException): ResponseEntity<ErrorResponse> {
+        logger.warn("User not found: ${e.message}")
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(
+                ErrorResponse(
+                    status = HttpStatus.NOT_FOUND.value(),
+                    error = "Not Found",
+                    message = "User not found",
+                    timestamp = LocalDateTime.now()
+                )
+            )
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleValidationException(e: MethodArgumentNotValidException): ResponseEntity<ValidationErrorResponse> {
+        logger.warn("Validation failed: ${e.bindingResult.fieldErrorCount} errors")
+        
+        val errors = mutableMapOf<String, String>()
+        e.bindingResult.allErrors.forEach { error ->
+            val fieldName = (error as FieldError).field
+            val errorMessage = error.defaultMessage ?: "Invalid value"
+            errors[fieldName] = errorMessage
+        }
+
+        val response = ValidationErrorResponse(
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = "Validation Failed",
+            message = "Request validation failed",
+            errors = errors,
+            timestamp = LocalDateTime.now()
+        )
+
+        return ResponseEntity.badRequest().body(response)
+    }
+
     @ExceptionHandler(BadCredentialsException::class)
     fun handleBadCredentials(e: BadCredentialsException): ResponseEntity<ErrorResponse> {
         logger.warn("Bad credentials: ${e.message}")
@@ -119,5 +188,13 @@ data class ErrorResponse(
     val status: Int,
     val error: String,
     val message: String,
+    val timestamp: LocalDateTime
+)
+
+data class ValidationErrorResponse(
+    val status: Int,
+    val error: String,
+    val message: String,
+    val errors: Map<String, String>,
     val timestamp: LocalDateTime
 )

@@ -201,7 +201,7 @@
         "dependencies": [
           3
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
@@ -209,7 +209,7 @@
             "description": "Create data transfer objects for authentication endpoints including request validation and response structures",
             "dependencies": [],
             "details": "Create RegisterRequest DTO with username and password fields, add validation annotations (@NotBlank, @Size for username min 3 chars, password min 8 chars with complexity requirements). Create LoginRequest DTO with username and password fields. Create AuthResponse DTO with apiKey field and optional message field. Add password strength validation using regex pattern requiring uppercase, lowercase, number, and special character. Include proper error message constants for validation failures.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test DTO validation annotations work correctly, password strength requirements are enforced, serialization/deserialization works properly"
           },
           {
@@ -220,7 +220,7 @@
               "4.1"
             ],
             "details": "Create UserService with registerUser() method that checks username uniqueness, hashes password using BCrypt with strength 12, generates UUID-based API key, and saves user to database. Implement authenticateUser() method that validates credentials using BCrypt.checkpw(). Create generateApiKey() method using UUID.randomUUID() with prefix 'api_'. Add proper exception handling for duplicate usernames (throw UserAlreadyExistsException) and invalid credentials (throw InvalidCredentialsException). Inject UserRepository for database operations.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test successful user registration, duplicate username handling, password hashing verification, API key generation uniqueness, credential validation"
           },
           {
@@ -232,7 +232,7 @@
               "4.2"
             ],
             "details": "Create AuthController with @RestController and @RequestMapping('/auth'). Implement POST /auth/register endpoint accepting RegisterRequest, calling UserService.registerUser(), returning AuthResponse with 201 status. Implement POST /auth/login endpoint accepting LoginRequest, calling UserService.authenticateUser(), returning AuthResponse with existing API key. Add @Valid annotations for request validation. Include proper HTTP status codes: 201 for registration, 200 for login, 409 for duplicate username, 401 for invalid credentials.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test registration endpoint returns API key with 201 status, login endpoint returns existing API key, proper error responses for validation failures and business logic errors"
           },
           {
@@ -243,7 +243,7 @@
               "4.3"
             ],
             "details": "Create @ControllerAdvice class AuthExceptionHandler to handle UserAlreadyExistsException (409 status), InvalidCredentialsException (401 status), and MethodArgumentNotValidException (400 status). Add custom password validator annotation @ValidPassword with implementation checking minimum 8 characters, uppercase, lowercase, number, and special character. Create error response DTO with timestamp, status, error, and message fields. Add rate limiting considerations for login attempts. Include proper logging for security events.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test password validation rejects weak passwords, error handler returns proper HTTP status codes and error messages, validation errors are properly formatted"
           },
           {
@@ -254,7 +254,7 @@
               "4.4"
             ],
             "details": "Create AuthControllerIntegrationTest with @SpringBootTest and @AutoConfigureTestDatabase. Test complete registration flow, login flow, duplicate username scenarios, invalid credentials, password validation edge cases. Add security headers configuration in SecurityConfig. Implement request logging for authentication attempts. Add API key format validation. Create database constraints for username uniqueness. Test concurrent registration attempts with same username. Verify BCrypt salt randomization. Add input sanitization to prevent injection attacks.",
-            "status": "pending",
+            "status": "in-progress",
             "testStrategy": "Run integration tests covering all authentication scenarios, verify security headers are present, test concurrent access scenarios, validate API key uniqueness across multiple registrations"
           }
         ]
@@ -1018,7 +1018,7 @@
     ],
     "metadata": {
       "created": "2025-08-27T05:19:59.208Z",
-      "updated": "2025-08-27T06:16:52.827Z",
+      "updated": "2025-08-27T06:47:28.055Z",
       "description": "Tasks for master context"
     }
   }

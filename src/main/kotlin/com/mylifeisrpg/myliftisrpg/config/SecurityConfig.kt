@@ -1,7 +1,7 @@
 package com.mylifeisrpg.myliftisrpg.config
 
 import com.mylifeisrpg.myliftisrpg.security.ApiKeyAuthenticationFilter
-import com.mylifeisrpg.myliftisrpg.security.SimpleApiKeyAuthenticationProvider
+import com.mylifeisrpg.myliftisrpg.security.DatabaseApiKeyAuthenticationProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
@@ -19,12 +19,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val apiKeyAuthenticationProvider: SimpleApiKeyAuthenticationProvider
+    private val databaseApiKeyAuthenticationProvider: DatabaseApiKeyAuthenticationProvider
 ) {
 
     @Bean
     fun authenticationManager(): AuthenticationManager {
-        return ProviderManager(listOf(apiKeyAuthenticationProvider))
+        return ProviderManager(listOf(databaseApiKeyAuthenticationProvider))
     }
 
     @Bean
@@ -41,6 +41,7 @@ class SecurityConfig(
             .authorizeHttpRequests { authorize ->
                 authorize
                     .requestMatchers("/", "/health", "/actuator/**").permitAll()
+                    .requestMatchers("/auth/**").permitAll() // Allow public access to auth endpoints
                     .requestMatchers("/api/**").authenticated()
                     .anyRequest().authenticated()
             }
