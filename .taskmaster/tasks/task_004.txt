@@ -1,0 +1,43 @@
+# Task ID: 4
+# Title: Implement User Registration and Login APIs
+# Status: pending
+# Dependencies: 3
+# Priority: high
+# Description: Create authentication endpoints for user registration and API key retrieval
+# Details:
+Implement AuthController with POST /auth/register (username, password) and POST /auth/login (username, password). Registration: validate unique username, hash password using BCrypt, generate unique API key, save to Users table, return API key. Login: validate credentials, return existing API key. Add input validation, password strength requirements, and proper error handling. Create UserService with methods: registerUser(), authenticateUser(), generateApiKey(). Add DTOs: RegisterRequest, LoginRequest, AuthResponse.
+
+# Test Strategy:
+Test successful registration returns API key, duplicate username returns 409, invalid credentials return 401, password validation works correctly.
+
+# Subtasks:
+## 1. Create Authentication DTOs and Request/Response Models [pending]
+### Dependencies: None
+### Description: Create data transfer objects for authentication endpoints including request validation and response structures
+### Details:
+Create RegisterRequest DTO with username and password fields, add validation annotations (@NotBlank, @Size for username min 3 chars, password min 8 chars with complexity requirements). Create LoginRequest DTO with username and password fields. Create AuthResponse DTO with apiKey field and optional message field. Add password strength validation using regex pattern requiring uppercase, lowercase, number, and special character. Include proper error message constants for validation failures.
+
+## 2. Implement UserService with Core Authentication Logic [pending]
+### Dependencies: 4.1
+### Description: Create UserService class with methods for user registration, authentication, and API key generation
+### Details:
+Create UserService with registerUser() method that checks username uniqueness, hashes password using BCrypt with strength 12, generates UUID-based API key, and saves user to database. Implement authenticateUser() method that validates credentials using BCrypt.checkpw(). Create generateApiKey() method using UUID.randomUUID() with prefix 'api_'. Add proper exception handling for duplicate usernames (throw UserAlreadyExistsException) and invalid credentials (throw InvalidCredentialsException). Inject UserRepository for database operations.
+
+## 3. Create AuthController with Registration and Login Endpoints [pending]
+### Dependencies: 4.1, 4.2
+### Description: Implement REST controller with POST endpoints for user registration and login functionality
+### Details:
+Create AuthController with @RestController and @RequestMapping('/auth'). Implement POST /auth/register endpoint accepting RegisterRequest, calling UserService.registerUser(), returning AuthResponse with 201 status. Implement POST /auth/login endpoint accepting LoginRequest, calling UserService.authenticateUser(), returning AuthResponse with existing API key. Add @Valid annotations for request validation. Include proper HTTP status codes: 201 for registration, 200 for login, 409 for duplicate username, 401 for invalid credentials.
+
+## 4. Add Input Validation and Error Handling [pending]
+### Dependencies: 4.3
+### Description: Implement comprehensive input validation, password strength requirements, and global error handling for authentication endpoints
+### Details:
+Create @ControllerAdvice class AuthExceptionHandler to handle UserAlreadyExistsException (409 status), InvalidCredentialsException (401 status), and MethodArgumentNotValidException (400 status). Add custom password validator annotation @ValidPassword with implementation checking minimum 8 characters, uppercase, lowercase, number, and special character. Create error response DTO with timestamp, status, error, and message fields. Add rate limiting considerations for login attempts. Include proper logging for security events.
+
+## 5. Integration Testing and Security Hardening [pending]
+### Dependencies: 4.4
+### Description: Create comprehensive integration tests and implement security best practices for authentication system
+### Details:
+Create AuthControllerIntegrationTest with @SpringBootTest and @AutoConfigureTestDatabase. Test complete registration flow, login flow, duplicate username scenarios, invalid credentials, password validation edge cases. Add security headers configuration in SecurityConfig. Implement request logging for authentication attempts. Add API key format validation. Create database constraints for username uniqueness. Test concurrent registration attempts with same username. Verify BCrypt salt randomization. Add input sanitization to prevent injection attacks.
+

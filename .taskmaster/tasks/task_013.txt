@@ -1,0 +1,43 @@
+# Task ID: 13
+# Title: Implement Buff Application Logic in Reward Systems
+# Status: pending
+# Dependencies: 12
+# Priority: medium
+# Description: Integrate daily buff effects into quest completion and gacha systems
+# Details:
+Modify QuestService and ItemService to apply active daily buffs. In quest completion: check for EXP_MULTIPLIER buff and apply to reward calculation. In gacha system: check for DROP_RATE_BOOST and modify rarity probabilities. Add buff checking utility method in FortuneService. Implement buff expiration logic (daily reset). Add buff status to character stats calculation for STAT_BOOST buffs. Create buff application logs for debugging. Update reward calculation methods to include buff multipliers. Add buff indicators in API responses.
+
+# Test Strategy:
+Test EXP multiplier increases quest rewards correctly, drop rate boost affects gacha probabilities, stat boosts are applied to character stats, buffs expire properly at day change.
+
+# Subtasks:
+## 1. Create Buff Checking Utility in FortuneService [pending]
+### Dependencies: None
+### Description: Implement utility methods in FortuneService to check active daily buffs and their expiration status
+### Details:
+Add methods to FortuneService: getActiveDailyBuffs(userId) to retrieve all active buffs for a user, isBuffActive(userId, buffType) to check if specific buff is active, and getBuffMultiplier(userId, buffType) to get buff strength. Implement buff expiration logic that checks if buff was created today using daily reset logic. Add logging for buff status checks and expiration events.
+
+## 2. Integrate EXP Multiplier Buff in Quest Completion [pending]
+### Dependencies: 13.1
+### Description: Modify QuestService to apply EXP_MULTIPLIER buff effects to quest reward calculations
+### Details:
+Update QuestService.completeQuest() method to check for active EXP_MULTIPLIER buff using FortuneService utility. If buff is active, multiply base EXP reward by buff multiplier before awarding to user. Add buff application logging to track when EXP multipliers are applied. Update quest completion response to include buff information and final calculated rewards. Ensure buff is only applied once per quest completion.
+
+## 3. Integrate Drop Rate Boost in Gacha System [pending]
+### Dependencies: 13.1
+### Description: Modify ItemService gacha logic to apply DROP_RATE_BOOST buff effects to rarity probabilities
+### Details:
+Update ItemService.performGacha() method to check for active DROP_RATE_BOOST buff. If active, modify rarity probabilities by shifting percentages toward higher rarities (e.g., reduce Common by 10%, increase Rare by 5%, Epic by 3%, Legendary by 2%). Ensure total probabilities still equal 100%. Add buff application logging for gacha pulls. Include buff status in gacha response to show modified drop rates were applied.
+
+## 4. Implement STAT_BOOST Buff in Character Stats Calculation [pending]
+### Dependencies: 13.1
+### Description: Integrate STAT_BOOST buffs into character stats calculation system
+### Details:
+Modify character stats calculation methods to include active STAT_BOOST buffs. Update CharacterService or equivalent to check for active stat buffs and apply percentage or flat bonuses to base stats (attack, defense, HP). Ensure buff bonuses are calculated after equipment bonuses but before final stats display. Add buff indicators to character stats API responses showing which stats are buffed and by how much. Create separate method to calculate buffed vs unbuffed stats.
+
+## 5. Add Buff Status Indicators to API Responses [pending]
+### Dependencies: 13.2, 13.3, 13.4
+### Description: Update relevant API endpoints to include buff status information and application logs
+### Details:
+Modify API responses for quest completion, gacha pulls, and character stats to include buff status information. Add fields like 'buffsApplied', 'activeBuffs', and 'buffMultipliers' to response objects. Create comprehensive buff application logs for debugging purposes, including timestamps, buff types, multiplier values, and affected calculations. Update dashboard API to show current active buffs and their remaining duration. Ensure buff information is consistently formatted across all endpoints.
+

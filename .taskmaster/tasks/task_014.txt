@@ -1,0 +1,43 @@
+# Task ID: 14
+# Title: Add Comprehensive Error Handling and Validation
+# Status: pending
+# Dependencies: 13
+# Priority: medium
+# Description: Implement robust error handling, input validation, and API documentation
+# Details:
+Create global exception handler with @ControllerAdvice for consistent error responses. Add input validation using Bean Validation annotations (@Valid, @NotBlank, @Size, etc.). Implement custom exceptions: UserNotFoundException, InvalidApiKeyException, QuestNotFoundException, etc. Add proper HTTP status codes for different error scenarios. Create standardized error response format with error codes and messages. Add request/response logging for debugging. Implement rate limiting for API endpoints. Add OpenAPI/Swagger documentation with @Operation annotations. Create API documentation with example requests/responses.
+
+# Test Strategy:
+Test all error scenarios return appropriate status codes and messages, input validation catches invalid data, API documentation is complete and accurate, rate limiting works correctly.
+
+# Subtasks:
+## 1. Create Global Exception Handler and Custom Exceptions [pending]
+### Dependencies: None
+### Description: Implement a centralized exception handling system using @ControllerAdvice to provide consistent error responses across all API endpoints
+### Details:
+Create GlobalExceptionHandler class with @ControllerAdvice annotation. Implement custom exception classes: UserNotFoundException, InvalidApiKeyException, QuestNotFoundException, InvalidInputException, InsufficientCoinsException. Add @ExceptionHandler methods for each custom exception and common exceptions (IllegalArgumentException, MethodArgumentNotValidException, etc.). Define standardized ErrorResponse class with fields: timestamp, status, error, message, path, errorCode. Map each exception type to appropriate HTTP status codes (404 for NotFound, 400 for BadRequest, 401 for Unauthorized, etc.).
+
+## 2. Implement Input Validation with Bean Validation [pending]
+### Dependencies: 14.1
+### Description: Add comprehensive input validation to all API endpoints using Bean Validation annotations and custom validators
+### Details:
+Add Bean Validation dependency to pom.xml. Create validation annotations on DTOs and request objects: @Valid, @NotBlank, @NotNull, @Size, @Min, @Max, @Email, @Pattern. Implement custom validators for business logic: @ValidApiKey, @ValidQuestType, @ValidItemRarity. Add @Valid annotations to controller method parameters. Create validation groups for different scenarios (Create, Update operations). Handle MethodArgumentNotValidException in GlobalExceptionHandler to return field-specific error messages.
+
+## 3. Add Request/Response Logging and Rate Limiting [pending]
+### Dependencies: 14.1
+### Description: Implement comprehensive logging for API requests/responses and rate limiting to protect against abuse
+### Details:
+Create LoggingFilter implementing Filter interface to log all HTTP requests/responses with timestamps, user info, endpoints, and response times. Use structured logging with JSON format including request ID for tracing. Implement rate limiting using bucket4j library with @RateLimit annotation. Configure different rate limits per endpoint type: 100 requests/minute for general APIs, 10 requests/minute for gacha endpoints. Store rate limit data in Redis or in-memory cache. Add rate limit headers in responses (X-RateLimit-Remaining, X-RateLimit-Reset).
+
+## 4. Create OpenAPI/Swagger Documentation [pending]
+### Dependencies: 14.2
+### Description: Add comprehensive API documentation using OpenAPI 3.0 with Swagger UI for interactive documentation
+### Details:
+Add springdoc-openapi-ui dependency to pom.xml. Configure OpenAPI in application.yml with API info, servers, and security schemes. Add @Operation annotations to all controller methods with summary, description, and response codes. Use @ApiResponse annotations for different HTTP status codes with example responses. Add @Schema annotations to DTOs with descriptions and examples. Create @Tag annotations for controller grouping. Configure Swagger UI path and customize appearance. Add authentication configuration for API key security.
+
+## 5. Integrate Error Handling with Existing Controllers [pending]
+### Dependencies: 14.1, 14.2, 14.3, 14.4
+### Description: Update all existing controllers to use the new error handling system and ensure consistent error responses
+### Details:
+Update UserController, QuestController, InventoryController, ItemController, StageController, and LifeCounterController to throw appropriate custom exceptions instead of returning error responses directly. Replace manual error handling with custom exceptions (throw new UserNotFoundException instead of returning 404 responses). Add @Valid annotations to request parameters where missing. Ensure all endpoints return consistent error format through GlobalExceptionHandler. Update service layer methods to throw business logic exceptions. Add proper HTTP status codes for success scenarios (201 for creation, 204 for deletion).
+

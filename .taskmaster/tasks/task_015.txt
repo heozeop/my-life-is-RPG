@@ -1,0 +1,43 @@
+# Task ID: 15
+# Title: Setup Production Configuration and Deployment
+# Status: pending
+# Dependencies: 14
+# Priority: low
+# Description: Configure application for production deployment with free tier database
+# Details:
+Configure production application.yml with environment variables for database connection, API keys, and other sensitive data. Setup HikariCP connection pool with optimal settings for free tier (maxPoolSize=5, connectionTimeout=30000). Add health check endpoints for monitoring. Configure logging levels and log rotation. Setup database migration scripts using Flyway or Liquibase. Add Docker configuration for containerized deployment. Configure for deployment on OCI/AWS free tier. Add monitoring and metrics collection. Setup backup strategy for database. Create deployment documentation with step-by-step instructions.
+
+# Test Strategy:
+Test application starts correctly in production environment, database connections are stable under load, health checks respond properly, deployment process is repeatable.
+
+# Subtasks:
+## 1. Configure Production Application Properties and Environment Variables [pending]
+### Dependencies: None
+### Description: Setup production application.yml with environment-based configuration for database connections, API keys, and sensitive data management
+### Details:
+Create application-prod.yml with environment variable placeholders for database URL, username, password, and API keys. Configure HikariCP connection pool with production settings: maxPoolSize=5, connectionTimeout=30000ms, idleTimeout=600000ms, maxLifetime=1800000ms optimized for free tier limits. Setup logging configuration with appropriate levels (INFO for root, WARN for third-party libraries) and log rotation policies. Add Spring profiles configuration to separate development and production environments. Configure server port, context path, and other deployment-specific settings.
+
+## 2. Implement Health Check Endpoints and Monitoring [pending]
+### Dependencies: 15.1
+### Description: Add comprehensive health check endpoints and monitoring capabilities for production deployment
+### Details:
+Implement Spring Boot Actuator health endpoints including /actuator/health, /actuator/info, and custom health indicators for database connectivity and application status. Create custom health check controller with endpoints for database ping, memory usage, and application readiness. Add metrics collection using Micrometer for monitoring connection pool usage, request counts, and response times. Configure health check responses to include database status, available memory, and uptime information. Setup security for actuator endpoints to prevent unauthorized access.
+
+## 3. Setup Database Migration Scripts and Schema Management [pending]
+### Dependencies: 15.1
+### Description: Configure Flyway database migration system for production schema management and version control
+### Details:
+Add Flyway dependency to pom.xml and configure migration settings in application-prod.yml. Create migration scripts in src/main/resources/db/migration following naming convention V1__Initial_schema.sql, V2__Add_user_tables.sql, etc. Implement baseline migration with all existing table structures (Users, Characters, Items, Inventories, Stages). Add migration scripts for any schema changes from development. Configure Flyway to run automatically on application startup with validate-on-migrate enabled. Setup migration rollback strategies and backup procedures.
+
+## 4. Create Docker Configuration and Containerization Setup [pending]
+### Dependencies: 15.1, 15.2, 15.3
+### Description: Setup Docker configuration for containerized deployment with multi-stage builds and production optimization
+### Details:
+Create Dockerfile with multi-stage build: build stage using Maven image to compile application, runtime stage using OpenJDK slim image for smaller footprint. Configure .dockerignore to exclude unnecessary files. Create docker-compose.yml for local testing with database service. Setup environment variable injection for database connections and API keys. Configure JVM memory settings appropriate for free tier limits (-Xmx512m -Xms256m). Add health check configuration in Docker container. Create build scripts for automated image creation and tagging.
+
+## 5. Configure Cloud Deployment and Create Documentation [pending]
+### Dependencies: 15.1, 15.2, 15.3, 15.4
+### Description: Setup deployment configuration for OCI/AWS free tier and create comprehensive deployment documentation
+### Details:
+Create deployment scripts for OCI Always Free tier or AWS Free Tier including compute instance setup, security group configuration, and database setup. Configure application for cloud deployment with external database connection strings and environment-specific settings. Setup automated backup strategy using cloud provider tools for database snapshots. Create comprehensive deployment documentation including: environment setup steps, database configuration, application deployment process, monitoring setup, troubleshooting guide, and maintenance procedures. Add CI/CD pipeline configuration files for automated deployment.
+

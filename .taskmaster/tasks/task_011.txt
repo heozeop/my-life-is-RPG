@@ -1,0 +1,43 @@
+# Task ID: 11
+# Title: Implement Life Percentage Counter API
+# Status: pending
+# Dependencies: 10
+# Priority: medium
+# Description: Create philosophical life percentage calculation based on user age and life expectancy
+# Details:
+Implement LifeCounterController with GET /api/life/percentage endpoint. Create LifeCounterService that calculates life percentage using formula: (current_age / life_expectancy) * 100. Use configurable life expectancy (default 80 years). Add different calculation modes: optimistic (85 years), realistic (80 years), pessimistic (75 years). Include remaining years, months, days calculations. Add motivational messages based on life percentage ranges. Create philosophical insights about time value. Add DTOs: LifePercentageResponse with percentage, remaining time, and motivational message.
+
+# Test Strategy:
+Test percentage calculations are mathematically correct, different life expectancy modes work properly, motivational messages are appropriate for age ranges.
+
+# Subtasks:
+## 1. Create Life Percentage DTOs and Configuration [pending]
+### Dependencies: None
+### Description: Create data transfer objects and configuration classes for life percentage calculations
+### Details:
+Create LifePercentageResponse DTO with fields: percentage (double), remainingYears (int), remainingMonths (int), remainingDays (int), motivationalMessage (String), philosophicalInsight (String), calculationMode (enum). Create LifeExpectancyMode enum with OPTIMISTIC(85), REALISTIC(80), PESSIMISTIC(75) values. Add configuration properties for default life expectancy values in application.properties.
+
+## 2. Implement Core Life Percentage Calculation Logic [pending]
+### Dependencies: 11.1
+### Description: Create the service layer with mathematical calculations for life percentage and remaining time
+### Details:
+Create LifeCounterService with calculateLifePercentage method using formula: (current_age / life_expectancy) * 100. Implement calculateRemainingTime method to compute years, months, and days remaining. Add support for different calculation modes (optimistic/realistic/pessimistic). Handle edge cases like age exceeding life expectancy (cap at 100%). Include leap year considerations for accurate day calculations.
+
+## 3. Create Motivational Message System [pending]
+### Dependencies: 11.2
+### Description: Implement dynamic motivational messages based on life percentage ranges
+### Details:
+Create MessageService with getMotivationalMessage method that returns different messages based on life percentage ranges: 0-20% (youth/potential focused), 21-40% (growth/opportunity focused), 41-60% (achievement/wisdom focused), 61-80% (legacy/experience focused), 81-100% (gratitude/reflection focused). Store messages in a configuration file or enum. Include randomization to provide variety within each range.
+
+## 4. Add Philosophical Insights Generator [pending]
+### Dependencies: 11.3
+### Description: Create philosophical insights about time value and life meaning
+### Details:
+Extend MessageService with getPhilosophicalInsight method that provides deep, thoughtful insights about time, mortality, and life purpose. Create insights categorized by life stages and percentage ranges. Include quotes from philosophers, time-related wisdom, and reflections on life's finite nature. Implement rotation system to avoid repetitive insights. Focus on positive, meaningful content that encourages reflection without being morbid.
+
+## 5. Implement Life Counter Controller and API Endpoint [pending]
+### Dependencies: 11.2, 11.3, 11.4
+### Description: Create REST controller with GET /api/life/percentage endpoint
+### Details:
+Create LifeCounterController with GET /api/life/percentage endpoint accepting optional 'mode' query parameter (optimistic/realistic/pessimistic, defaults to realistic). Extract user age from authentication context or require age parameter. Integrate LifeCounterService, MessageService for complete response. Add proper error handling for invalid ages or missing user data. Include API documentation with Swagger annotations. Return LifePercentageResponse with all calculated fields.
+

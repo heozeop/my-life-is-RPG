@@ -1,0 +1,43 @@
+# Task ID: 3
+# Title: Implement API Key Authentication Filter
+# Status: pending
+# Dependencies: 2
+# Priority: high
+# Description: Create custom authentication filter to validate X-API-KEY header for user identification
+# Details:
+Implement ApiKeyAuthenticationFilter extending OncePerRequestFilter. Check X-API-KEY header in requests, validate against Users table api_key column. Set SecurityContext with authenticated user info. Create ApiKeyAuthenticationProvider and configure in SecurityConfig. Generate secure random API keys using SecureRandom with UUID. Implement middleware to extract current user from SecurityContext. Add exception handling for invalid/missing API keys with proper HTTP status codes (401 Unauthorized).
+
+# Test Strategy:
+Test with valid API key returns 200, invalid key returns 401, missing key returns 401. Verify user context is properly set and accessible in controllers.
+
+# Subtasks:
+## 1. Create ApiKeyAuthenticationFilter Class [pending]
+### Dependencies: None
+### Description: Implement the core authentication filter that extends OncePerRequestFilter to intercept HTTP requests and validate API keys
+### Details:
+Create ApiKeyAuthenticationFilter class extending OncePerRequestFilter. Override doFilterInternal method to extract X-API-KEY header from HttpServletRequest. Implement logic to skip authentication for public endpoints (like /api/auth/login). If API key is present, create ApiKeyAuthenticationToken and pass to AuthenticationManager. If authentication succeeds, set SecurityContextHolder with authenticated user. If fails or missing, continue filter chain without authentication (let other components handle 401).
+
+## 2. Implement ApiKeyAuthenticationProvider [pending]
+### Dependencies: 3.1
+### Description: Create authentication provider to validate API keys against the Users table and create authenticated user context
+### Details:
+Create ApiKeyAuthenticationProvider implementing AuthenticationProvider. Override authenticate method to accept ApiKeyAuthenticationToken. Query Users table by api_key column to find matching user. If user found and active, create UsernamePasswordAuthenticationToken with user details and authorities. If not found, throw BadCredentialsException. Implement supports method to return true for ApiKeyAuthenticationToken class. Add proper error handling for database connection issues.
+
+## 3. Configure Security Filter Chain [pending]
+### Dependencies: 3.1, 3.2
+### Description: Update SecurityConfig to integrate the API key authentication filter and provider into Spring Security chain
+### Details:
+Update SecurityConfig class to register ApiKeyAuthenticationProvider with AuthenticationManager. Add ApiKeyAuthenticationFilter to security filter chain before UsernamePasswordAuthenticationFilter. Configure filter to apply to all API endpoints except public ones (/api/auth/**). Set up proper exception handling with AuthenticationEntryPoint for 401 responses. Configure CORS and CSRF settings appropriately for API key authentication. Ensure filter order doesn't conflict with existing authentication mechanisms.
+
+## 4. Implement API Key Generation and Management [pending]
+### Dependencies: None
+### Description: Create service methods for generating secure API keys and managing them in the Users table
+### Details:
+Create ApiKeyService with generateApiKey method using SecureRandom and UUID for cryptographically secure keys. Format as 'ak_' + UUID.randomUUID().toString().replace('-', ''). Add method to update user's api_key column in database. Implement key rotation functionality for security. Add validation method to check key format and uniqueness. Create method to revoke API keys by setting to null. Ensure generated keys are URL-safe and have sufficient entropy (minimum 32 characters).
+
+## 5. Add User Context Middleware and Exception Handling [pending]
+### Dependencies: 3.3
+### Description: Implement middleware to extract current user from SecurityContext and add comprehensive error handling for authentication failures
+### Details:
+Create UserContextService with getCurrentUser method that extracts authenticated user from SecurityContextHolder. Add null checks and proper exception handling for unauthenticated requests. Create custom exceptions: InvalidApiKeyException, MissingApiKeyException. Implement GlobalExceptionHandler with @ExceptionHandler methods for authentication exceptions returning proper HTTP 401 status with JSON error responses. Add logging for authentication attempts and failures. Create utility methods for controllers to easily access current user information.
+

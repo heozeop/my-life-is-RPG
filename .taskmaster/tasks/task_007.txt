@@ -1,0 +1,43 @@
+# Task ID: 7
+# Title: Implement Daily Fortune and Buff System
+# Status: pending
+# Dependencies: 6
+# Priority: medium
+# Description: Create daily fortune system with random buffs based on user ID and date seed
+# Details:
+Implement FortuneController with GET /api/fortune/today endpoint. Create FortuneService that generates deterministic daily fortune using seed = userId + currentDate. Define fortune messages array and buff types (EXP_MULTIPLIER, DROP_RATE_BOOST, STAT_BOOST). Generate daily buff with Random(seed) for consistency. Store/retrieve daily buffs in DailyBuffs table. Create fortune response with message, buff type, and multiplier value. Implement buff application logic in quest completion and other reward systems. Add fortune message templates with Korean philosophical/motivational content.
+
+# Test Strategy:
+Test same user gets same fortune on same day, different users get different fortunes, buffs are applied correctly to rewards, fortune changes daily.
+
+# Subtasks:
+## 1. Create DailyBuffs Database Table and Entity [pending]
+### Dependencies: None
+### Description: Set up the database infrastructure for storing daily fortune buffs with proper schema design and entity mapping
+### Details:
+Create DailyBuffs table with columns: id (primary key), user_id (foreign key to Users), date (DATE), buff_type (enum: EXP_MULTIPLIER, DROP_RATE_BOOST, STAT_BOOST), multiplier_value (decimal), created_at, updated_at. Add unique constraint on (user_id, date) to ensure one buff per user per day. Create corresponding JPA entity class with proper annotations and relationships to User entity. Include enum class for BuffType with appropriate values.
+
+## 2. Implement FortuneService with Deterministic Random Generation [pending]
+### Dependencies: 7.1
+### Description: Create the core service class that generates consistent daily fortunes using user ID and date as seed
+### Details:
+Create FortuneService class with generateDailyFortune(userId, date) method. Implement deterministic random generation using seed = userId + date string (e.g., '2024-01-15'). Define arrays of Korean philosophical fortune messages (at least 20 messages) with motivational content. Create buff generation logic using Random(seed) to select buff type and calculate multiplier values (EXP_MULTIPLIER: 1.1-1.5x, DROP_RATE_BOOST: 1.2-1.8x, STAT_BOOST: 1.1-1.3x). Implement database operations to store/retrieve daily buffs with duplicate prevention.
+
+## 3. Create FortuneController with REST API Endpoint [pending]
+### Dependencies: 7.2
+### Description: Implement the REST controller to expose the daily fortune functionality through HTTP API
+### Details:
+Create FortuneController class with GET /api/fortune/today endpoint. Implement proper authentication to get current user from security context. Call FortuneService to get or generate today's fortune. Create FortuneResponse DTO with fields: message (String), buffType (enum), multiplierValue (BigDecimal), date (LocalDate). Add proper error handling for invalid requests and service exceptions. Include appropriate HTTP status codes and response headers.
+
+## 4. Implement Buff Application Logic in Reward Systems [pending]
+### Dependencies: 7.3
+### Description: Integrate the daily buff system with existing quest completion and reward calculation mechanisms
+### Details:
+Modify existing reward calculation services to check for active daily buffs. Create BuffApplicationService to retrieve user's current daily buff and apply multipliers to rewards. Update quest completion logic to apply EXP_MULTIPLIER to experience gains. Implement DROP_RATE_BOOST for item drop calculations in gacha or quest rewards. Add STAT_BOOST application to character stat calculations. Create helper methods to check buff expiration (daily reset at midnight). Ensure buff effects are applied consistently across all reward systems.
+
+## 5. Add Fortune Message Templates and Localization [pending]
+### Dependencies: 7.2
+### Description: Create comprehensive fortune message content with Korean philosophical themes and proper formatting
+### Details:
+Expand fortune message arrays with at least 50 unique Korean philosophical and motivational messages. Organize messages by categories: wisdom quotes, motivational phrases, philosophical insights, daily encouragement. Implement message formatting with proper Korean typography and spacing. Add seasonal or contextual message variations if applicable. Create message selection logic that considers buff type for thematic consistency (e.g., strength-themed messages for STAT_BOOST). Include fallback messages for edge cases.
+

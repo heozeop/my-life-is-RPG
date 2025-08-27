@@ -1,0 +1,43 @@
+# Task ID: 10
+# Title: Implement Life Timeline Stage System
+# Status: pending
+# Dependencies: 9
+# Priority: medium
+# Description: Create life stage system representing 10-year chapters with age-based progression
+# Details:
+Implement StageController with endpoints: GET /api/stages (all stages), GET /api/stages/current (user's current stage based on age). Create StageService with predefined life stages: 0-10 (Childhood), 10-20 (Youth), 20-30 (Early Adulthood), 30-40 (Career Building), 40-50 (Maturity), 50-60 (Wisdom), 60-70 (Elder), 70+ (Legacy). Add user birthdate to Users table for age calculation. Implement current stage detection based on user age. Create stage descriptions with philosophical/motivational content. Add stage progression tracking and achievements. Create DTOs: StageResponse, CurrentStageResponse.
+
+# Test Strategy:
+Test age calculation is correct, current stage detection works properly, stage descriptions are meaningful, stage progression is tracked accurately.
+
+# Subtasks:
+## 1. Add birthdate field to Users table and update user model [pending]
+### Dependencies: None
+### Description: Extend the Users table to include birthdate information required for age calculation and stage determination
+### Details:
+Create database migration to add birthdate column (DATE type) to Users table. Update User entity/model to include birthdate field with appropriate validation (not null, reasonable date range). Add birthdate to user registration/profile update endpoints. Implement age calculation utility method that computes current age from birthdate.
+
+## 2. Create Stage entity and predefined life stages data [pending]
+### Dependencies: 10.1
+### Description: Define the Stage data model and populate it with the 8 predefined life stages with their age ranges and descriptions
+### Details:
+Create Stage entity with fields: id, name, minAge, maxAge, description, motivationalContent. Create database migration for stages table. Implement data seeder or initialization script to populate stages: Childhood (0-10), Youth (10-20), Early Adulthood (20-30), Career Building (30-40), Maturity (40-50), Wisdom (50-60), Elder (60-70), Legacy (70+). Include philosophical and motivational descriptions for each stage.
+
+## 3. Implement StageService with stage detection logic [pending]
+### Dependencies: 10.2
+### Description: Create service layer to handle stage-related business logic including current stage detection based on user age
+### Details:
+Create StageService class with methods: getAllStages(), getCurrentStageForUser(userId), detectStageByAge(age). Implement stage detection algorithm that matches user's current age to appropriate stage age range. Add stage progression tracking logic. Handle edge cases like users older than 70 (Legacy stage). Include caching for stage data since it's relatively static.
+
+## 4. Create Stage DTOs for API responses [pending]
+### Dependencies: 10.2
+### Description: Define data transfer objects for stage-related API responses to ensure consistent and clean API contracts
+### Details:
+Create StageResponse DTO with fields: id, name, ageRange (formatted string like '20-30'), description, motivationalContent. Create CurrentStageResponse DTO extending StageResponse with additional fields: userAge, yearsInStage, yearsUntilNext, progressPercentage. Implement proper JSON serialization and validation annotations.
+
+## 5. Implement StageController with REST endpoints [pending]
+### Dependencies: 10.3, 10.4
+### Description: Create REST controller with endpoints to expose stage functionality to the frontend application
+### Details:
+Create StageController with GET /api/stages endpoint returning all available life stages using StageResponse DTOs. Implement GET /api/stages/current endpoint that returns user's current stage based on their age using CurrentStageResponse DTO. Add proper authentication/authorization, error handling for users without birthdate, and appropriate HTTP status codes. Include API documentation annotations.
+

@@ -1,0 +1,43 @@
+# Task ID: 6
+# Title: Implement Quest System with CRUD and Completion Logic
+# Status: pending
+# Dependencies: 5
+# Priority: high
+# Description: Create quest management system supporting yearly/monthly/weekly goals with completion rewards
+# Details:
+Implement QuestController with endpoints: GET /api/quests, POST /api/quests, GET /api/quests/{id}, PUT /api/quests/{id}, DELETE /api/quests/{id}, POST /api/quests/{id}/complete. Create QuestService with quest types enum (YEARLY, MONTHLY, WEEKLY) and completion logic. When quest completed: mark as completed, add entry to CompletedQuests, award EXP/coins to user's character, trigger level up if needed. Add quest filtering by type and completion status. Create DTOs: QuestRequest, QuestResponse, QuestCompletionResponse. Implement reward calculation based on quest type (yearly=1000 EXP, monthly=300 EXP, weekly=100 EXP).
+
+# Test Strategy:
+Test quest CRUD operations, completion awards correct EXP, character levels up appropriately, completed quests are tracked, user can only manage their own quests.
+
+# Subtasks:
+## 1. Create Quest Entity and DTOs [pending]
+### Dependencies: None
+### Description: Create the Quest entity with all necessary fields and corresponding Data Transfer Objects for API communication
+### Details:
+Create Quest entity with fields: id, title, description, questType (enum: YEARLY, MONTHLY, WEEKLY), isCompleted, userId, createdAt, updatedAt. Create CompletedQuests entity with questId, userId, completedAt, expAwarded, coinsAwarded. Create DTOs: QuestRequest (title, description, questType), QuestResponse (id, title, description, questType, isCompleted, createdAt), QuestCompletionResponse (quest, expAwarded, coinsAwarded, leveledUp, newLevel). Add JPA repositories for Quest and CompletedQuests entities.
+
+## 2. Implement QuestService with Business Logic [pending]
+### Dependencies: 6.1
+### Description: Create QuestService with core quest management and completion logic including reward calculation
+### Details:
+Implement QuestService with methods: createQuest, getQuestById, updateQuest, deleteQuest, getUserQuests, completeQuest. Add quest filtering by type and completion status. Implement reward calculation: YEARLY=1000 EXP, MONTHLY=300 EXP, WEEKLY=100 EXP. In completeQuest method: validate quest ownership, mark as completed, create CompletedQuests entry, award EXP/coins to user's character, check for level up using existing CharacterService. Add validation to prevent completing already completed quests.
+
+## 3. Create QuestController with REST Endpoints [pending]
+### Dependencies: 6.2
+### Description: Implement REST controller with all required quest management endpoints
+### Details:
+Create QuestController with endpoints: GET /api/quests (with optional type and status filters), POST /api/quests, GET /api/quests/{id}, PUT /api/quests/{id}, DELETE /api/quests/{id}. Add authentication to ensure users can only access their own quests. Implement proper HTTP status codes and error handling. Add request validation using @Valid annotations. Include pagination for quest listing. Use QuestService for all business logic operations.
+
+## 4. Implement Quest Completion Endpoint [pending]
+### Dependencies: 6.3
+### Description: Create the quest completion endpoint with reward processing and response handling
+### Details:
+Add POST /api/quests/{id}/complete endpoint to QuestController. Implement completion logic that calls QuestService.completeQuest method. Return QuestCompletionResponse with quest details, awarded EXP/coins, level up status, and new character level if applicable. Add proper error handling for cases like quest not found, quest already completed, or quest not owned by user. Include transaction management to ensure atomicity of completion process.
+
+## 5. Add Quest Filtering and Validation [pending]
+### Dependencies: 6.4
+### Description: Implement advanced quest filtering capabilities and comprehensive validation rules
+### Details:
+Enhance quest listing with filtering by questType (YEARLY, MONTHLY, WEEKLY) and completion status (completed, pending). Add query parameters to GET /api/quests endpoint. Implement comprehensive validation: quest title length limits, description requirements, valid quest types. Add business rules validation: users can only have limited number of active quests per type, prevent duplicate quest titles per user. Include sorting options by creation date, completion status, and quest type.
+

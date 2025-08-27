@@ -1,0 +1,43 @@
+# Task ID: 8
+# Title: Implement Item and Gacha System
+# Status: pending
+# Dependencies: 7
+# Priority: medium
+# Description: Create item database and gacha system for random item acquisition
+# Details:
+Implement ItemController with endpoints: GET /api/items (list available items), POST /api/items/gacha (perform gacha pull). Create ItemService with predefined items database including weapons, armor, accessories with different rarities (COMMON, RARE, EPIC, LEGENDARY). Implement gacha logic with rarity-based probability (Common 60%, Rare 30%, Epic 8%, Legendary 2%). Add items to user inventory after gacha. Create item stat bonuses (attack, defense, hp boosts). Implement gacha cost system (coins required). Add DTOs: ItemResponse, GachaRequest, GachaResponse. Define item types enum (WEAPON, ARMOR, ACCESSORY).
+
+# Test Strategy:
+Test gacha returns items with correct probability distribution, items are added to inventory, gacha costs are deducted, item stats are correctly defined.
+
+# Subtasks:
+## 1. Create Item Entity and Database Schema [pending]
+### Dependencies: None
+### Description: Define the Item entity with all necessary properties including type, rarity, stats, and create the database table structure
+### Details:
+Create Item entity with fields: id, name, description, type (WEAPON/ARMOR/ACCESSORY), rarity (COMMON/RARE/EPIC/LEGENDARY), attackBonus, defenseBonus, hpBonus, iconUrl. Create ItemType and ItemRarity enums. Set up JPA annotations and database table creation. Create repository interface extending JpaRepository for basic CRUD operations.
+
+## 2. Implement Item Service with Predefined Items Database [pending]
+### Dependencies: 8.1
+### Description: Create ItemService with predefined items for each type and rarity, implementing the core item management logic
+### Details:
+Create ItemService class with @PostConstruct method to populate database with predefined items. Define items for each combination of type and rarity with appropriate stat bonuses. Implement methods: getAllItems(), getItemById(), getItemsByType(), getItemsByRarity(). Create stat bonus scaling based on rarity (Common: 1-5, Rare: 6-15, Epic: 16-30, Legendary: 31-50).
+
+## 3. Implement Gacha Logic and Probability System [pending]
+### Dependencies: 8.2
+### Description: Create the gacha system with rarity-based probability distribution and random item selection logic
+### Details:
+Implement GachaService with performGacha() method using weighted random selection. Create probability weights: Common 60%, Rare 30%, Epic 8%, Legendary 2%. Use Random class with cumulative probability ranges. Implement item selection within chosen rarity tier. Add gacha cost validation (deduct coins from user). Create methods: calculateRarity(), selectRandomItemByRarity(), validateGachaCost().
+
+## 4. Create DTOs and Item Controller Endpoints [pending]
+### Dependencies: 8.3
+### Description: Implement the REST API endpoints for item listing and gacha functionality with proper DTOs
+### Details:
+Create DTOs: ItemResponse (id, name, description, type, rarity, stats), GachaRequest (userId, gachaCost), GachaResponse (item, remainingCoins, success). Implement ItemController with @RestController annotation. Add GET /api/items endpoint returning List<ItemResponse>. Add POST /api/items/gacha endpoint accepting GachaRequest and returning GachaResponse. Include proper error handling and validation.
+
+## 5. Integrate Inventory System for Gacha Items [pending]
+### Dependencies: 8.4
+### Description: Connect gacha system with user inventory to store acquired items and update user coins
+### Details:
+Modify GachaService to integrate with InventoryService (from task 9). After successful gacha pull, add item to user's inventory using InventoryService.addItemToInventory(). Update user's coin balance in UserService. Implement transaction management with @Transactional to ensure atomicity. Add validation to check user exists and has sufficient coins before gacha. Handle inventory capacity if applicable.
+

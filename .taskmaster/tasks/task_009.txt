@@ -1,0 +1,43 @@
+# Task ID: 9
+# Title: Implement Inventory and Equipment System
+# Status: pending
+# Dependencies: 8
+# Priority: medium
+# Description: Create inventory management and item equipment functionality
+# Details:
+Implement InventoryController with endpoints: GET /api/inventory (user's items), POST /api/items/{id}/equip, POST /api/items/{id}/unequip. Create InventoryService to manage item ownership and equipment slots (WEAPON, ARMOR, ACCESSORY). Implement equipment logic: only one item per slot, unequip previous item when equipping new one, apply stat bonuses to character when equipped. Add equipped item tracking in Inventories table with equipped_slot column. Calculate total character stats including equipment bonuses. Create DTOs: InventoryResponse, EquipmentResponse. Add validation for item ownership and equipment compatibility.
+
+# Test Strategy:
+Test inventory displays user's items correctly, equipment/unequipment works properly, stat bonuses are applied/removed correctly, users can only equip their own items.
+
+# Subtasks:
+## 1. Extend Inventories Table Schema for Equipment Tracking [pending]
+### Dependencies: None
+### Description: Modify the existing Inventories table to support equipment functionality by adding an equipped_slot column to track which equipment slot an item occupies when equipped
+### Details:
+Add equipped_slot column to Inventories table as VARCHAR(20) allowing values: 'WEAPON', 'ARMOR', 'ACCESSORY', or NULL for unequipped items. Create database migration script to alter the existing table structure. Update the Inventory entity model to include the equipped_slot field with appropriate JPA annotations. Ensure the column allows NULL values for backward compatibility with existing inventory records.
+
+## 2. Create Equipment DTOs and Response Models [pending]
+### Dependencies: 9.1
+### Description: Design and implement Data Transfer Objects for inventory and equipment operations to handle API request/response data structures
+### Details:
+Create InventoryResponse DTO containing item details (id, name, type, rarity, stats), equipped status, and equipped_slot information. Implement EquipmentResponse DTO for equipment operation results including success status, updated character stats, and equipped item details. Add validation annotations for equipment slot types. Include character stat calculations in response models to show total stats including equipment bonuses. Ensure DTOs properly serialize equipped and unequipped items differently.
+
+## 3. Implement Core InventoryService with Equipment Logic [pending]
+### Dependencies: 9.1, 9.2
+### Description: Create the business logic service to handle inventory management and equipment operations including slot management and stat calculations
+### Details:
+Implement InventoryService with methods: getUserInventory(), equipItem(), unequipItem(). Add equipment slot validation ensuring only one item per slot type (WEAPON, ARMOR, ACCESSORY). Implement auto-unequip logic when equipping new item to occupied slot. Create stat calculation methods that aggregate base character stats with equipped item bonuses. Add item ownership validation to prevent users from equipping items they don't own. Include equipment compatibility checks based on item type and character requirements.
+
+## 4. Develop InventoryController REST Endpoints [pending]
+### Dependencies: 9.2, 9.3
+### Description: Create REST API endpoints for inventory management and equipment operations with proper request handling and response formatting
+### Details:
+Implement GET /api/inventory endpoint returning user's complete inventory with equipped status indicators. Create POST /api/items/{id}/equip endpoint for equipping items with validation and stat recalculation. Implement POST /api/items/{id}/unequip endpoint for removing equipped items. Add proper HTTP status codes (200 for success, 400 for validation errors, 404 for item not found). Include authentication checks to ensure users can only access their own inventory. Implement error handling for invalid equipment operations.
+
+## 5. Integrate Equipment System with Character Stats [pending]
+### Dependencies: 9.3, 9.4
+### Description: Connect the equipment system with the existing character system to dynamically calculate and update total character statistics including equipment bonuses
+### Details:
+Modify CharacterService to include equipment bonuses in total stat calculations. Update character stat retrieval methods to aggregate base stats with equipped item bonuses. Implement real-time stat updates when items are equipped/unequipped. Add equipment summary to character profile responses showing currently equipped items. Create helper methods to calculate total attack, defense, and HP including all equipment modifiers. Ensure character level-up calculations work correctly with equipment bonuses.
+

@@ -1,0 +1,1025 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Spring Boot Kotlin Project with Dependencies",
+        "description": "Initialize Spring Boot project with Kotlin, Exposed ORM, MySQL connector, and required dependencies",
+        "details": "Create Spring Boot project using Spring Initializr with Kotlin language. Add dependencies: spring-boot-starter-web, spring-boot-starter-data-jpa, exposed-core, exposed-dao, exposed-jdbc, exposed-spring-boot-starter, mysql-connector-java, HikariCP, spring-boot-starter-security (for password hashing), kotlin-reflect. Configure application.yml with MySQL connection settings for free tier (HikariCP poolSize ≤ 5). Setup project structure with packages: controller, service, repository, model, config, filter.",
+        "testStrategy": "Verify project builds successfully, Spring Boot starts without errors, and database connection can be established. Test with simple health check endpoint.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Initialize Spring Boot Project with Kotlin",
+            "description": "Create a new Spring Boot project using Spring Initializr with Kotlin language support and basic web dependencies",
+            "dependencies": [],
+            "details": "Use Spring Initializr (start.spring.io) to generate project with: Spring Boot 3.x, Kotlin language, Gradle build system, Java 17+. Add initial dependencies: spring-boot-starter-web, spring-boot-starter-actuator for health checks. Set project metadata: group=com.example, artifact=rpg-api, name=RPG API, package=com.example.rpgapi. Download and extract the project. Verify the project structure includes src/main/kotlin and src/test/kotlin directories.",
+            "status": "pending",
+            "testStrategy": "Verify project builds with './gradlew build' and Spring Boot application starts successfully with './gradlew bootRun'. Check that actuator health endpoint responds at /actuator/health."
+          },
+          {
+            "id": 2,
+            "title": "Add Database and ORM Dependencies",
+            "description": "Configure build.gradle.kts with all required dependencies for database connectivity and Exposed ORM",
+            "dependencies": [],
+            "details": "Add dependencies to build.gradle.kts: spring-boot-starter-data-jpa, exposed-core, exposed-dao, exposed-jdbc, exposed-spring-boot-starter, mysql-connector-java, HikariCP, spring-boot-starter-security, kotlin-reflect. Specify versions: Exposed 0.44.1+, MySQL Connector 8.0.33+. Add kotlin-spring and kotlin-jpa plugins. Configure kotlin compiler options for JVM target 17. Add testImplementation dependencies for testing database operations.",
+            "status": "pending",
+            "testStrategy": "Run './gradlew dependencies' to verify all dependencies resolve correctly. Build project to ensure no dependency conflicts exist."
+          },
+          {
+            "id": 3,
+            "title": "Configure Database Connection Settings",
+            "description": "Setup application.yml with MySQL database configuration optimized for free tier usage",
+            "dependencies": [],
+            "details": "Create src/main/resources/application.yml with database configuration: spring.datasource.url, username, password placeholders. Configure HikariCP with maxPoolSize=5, connectionTimeout=30000ms, idleTimeout=600000ms, maxLifetime=1800000ms for free tier optimization. Add exposed configuration: exposed.spring.show-sql=true for development. Create application-dev.yml and application-prod.yml profiles. Set logging levels for SQL queries and connection pool monitoring.",
+            "status": "pending",
+            "testStrategy": "Test database connection by starting application with valid MySQL credentials. Verify HikariCP pool initializes with correct settings through actuator metrics."
+          },
+          {
+            "id": 4,
+            "title": "Setup Project Package Structure",
+            "description": "Create organized package structure with proper separation of concerns for the RPG API application",
+            "dependencies": [],
+            "details": "Create package structure under src/main/kotlin/com/example/rpgapi: controller/ for REST endpoints, service/ for business logic, repository/ for data access, model/ for entity classes, config/ for configuration classes, filter/ for request/response filters, dto/ for data transfer objects, exception/ for custom exceptions. Create corresponding test packages under src/test/kotlin. Add package-info.kt files with documentation for each package explaining its purpose.",
+            "status": "pending",
+            "testStrategy": "Verify package structure is created correctly and follows Spring Boot conventions. Create simple placeholder classes in each package to ensure they compile."
+          },
+          {
+            "id": 5,
+            "title": "Create Basic Application Configuration and Health Check",
+            "description": "Setup main application class, basic configuration, and verify the complete project setup works",
+            "dependencies": [],
+            "details": "Create main Application.kt class with @SpringBootApplication annotation. Add basic @Configuration class in config package for database and security setup. Create a simple HealthController in controller package with @RestController and basic health endpoint returning application status. Add @EnableJpaRepositories and @EnableExposedRepositories annotations. Configure basic security to allow health check access. Add application startup logging to verify all components initialize correctly.",
+            "status": "pending",
+            "testStrategy": "Start the application and verify: Spring Boot starts without errors, database connection is established, health check endpoint responds at /health, actuator endpoints are accessible, no bean creation failures occur during startup."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Configure Database Schema and Exposed ORM Setup",
+        "description": "Setup MySQL database schema and configure Exposed ORM with all required tables",
+        "details": "Create database schema with tables: Users (id, username, password_hash, api_key, created_at), Characters (id, user_id, name, level, exp, hp, attack, defense, created_at), Items (id, name, type, rarity, stat_bonus, description), Inventories (id, user_id, item_id, quantity, equipped_slot), Quests (id, user_id, title, description, type, reward_exp, reward_coins, completed, created_at), CompletedQuests (id, user_id, quest_id, completed_at), DailyBuffs (id, user_id, date, buff_type, multiplier), Stages (id, age_start, age_end, title, description). Configure Exposed table objects and DAO classes. Note: Use column-level FK references only (PlanetScale compatibility).",
+        "testStrategy": "Verify all tables are created correctly, Exposed can perform basic CRUD operations, and foreign key relationships work at application level.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Database Schema Tables",
+            "description": "Create all required MySQL database tables with proper column definitions, data types, and constraints",
+            "dependencies": [],
+            "details": "Create SQL DDL scripts for all tables: Users (id BIGINT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(50) UNIQUE NOT NULL, password_hash VARCHAR(255) NOT NULL, api_key VARCHAR(255) UNIQUE NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP), Characters (id BIGINT AUTO_INCREMENT PRIMARY KEY, user_id BIGINT NOT NULL, name VARCHAR(100) NOT NULL, level INT DEFAULT 1, exp BIGINT DEFAULT 0, hp INT DEFAULT 100, attack INT DEFAULT 10, defense INT DEFAULT 5, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP), Items (id BIGINT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100) NOT NULL, type ENUM('WEAPON', 'ARMOR', 'ACCESSORY') NOT NULL, rarity ENUM('COMMON', 'RARE', 'EPIC', 'LEGENDARY') NOT NULL, stat_bonus JSON, description TEXT), Inventories (id BIGINT AUTO_INCREMENT PRIMARY KEY, user_id BIGINT NOT NULL, item_id BIGINT NOT NULL, quantity INT DEFAULT 1, equipped_slot VARCHAR(20)), Quests (id BIGINT AUTO_INCREMENT PRIMARY KEY, user_id BIGINT NOT NULL, title VARCHAR(200) NOT NULL, description TEXT, type ENUM('DAILY', 'WEEKLY', 'STORY') NOT NULL, reward_exp INT DEFAULT 0, reward_coins INT DEFAULT 0, completed BOOLEAN DEFAULT FALSE, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP), CompletedQuests (id BIGINT AUTO_INCREMENT PRIMARY KEY, user_id BIGINT NOT NULL, quest_id BIGINT NOT NULL, completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP), DailyBuffs (id BIGINT AUTO_INCREMENT PRIMARY KEY, user_id BIGINT NOT NULL, date DATE NOT NULL, buff_type ENUM('EXP', 'COINS', 'ATTACK', 'DEFENSE') NOT NULL, multiplier DECIMAL(3,2) DEFAULT 1.0), Stages (id BIGINT AUTO_INCREMENT PRIMARY KEY, age_start INT NOT NULL, age_end INT NOT NULL, title VARCHAR(100) NOT NULL, description TEXT). Execute scripts to create tables in MySQL database.",
+            "status": "pending",
+            "testStrategy": "Verify all tables are created with correct structure using DESCRIBE statements, check constraints and indexes are properly applied"
+          },
+          {
+            "id": 2,
+            "title": "Configure Exposed ORM Table Objects",
+            "description": "Create Exposed table object definitions corresponding to all database tables with proper column mappings",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Create Kotlin object classes extending Table for each database table: UsersTable, CharactersTable, ItemsTable, InventoriesTable, QuestsTable, CompletedQuestsTable, DailyBuffsTable, StagesTable. Define columns using appropriate Exposed column types (long(), varchar(), text(), datetime(), bool(), enumeration(), json()). Use column-level foreign key references only for PlanetScale compatibility - avoid table-level FK constraints. Example: val userId = long('user_id').references(UsersTable.id). Set proper primary keys using id columns. Configure table names to match database schema exactly.",
+            "status": "pending",
+            "testStrategy": "Verify table objects compile correctly and column definitions match database schema exactly"
+          },
+          {
+            "id": 3,
+            "title": "Setup Database Connection and Exposed Configuration",
+            "description": "Configure database connection properties and initialize Exposed ORM with MySQL database",
+            "dependencies": [
+              "2.2"
+            ],
+            "details": "Add MySQL JDBC driver dependency to build.gradle.kts. Configure database connection in application.yml with properties: spring.datasource.url, username, password, driver-class-name. Setup HikariCP connection pool with appropriate settings for development (maxPoolSize=10, connectionTimeout=20000, idleTimeout=300000). Create DatabaseConfig class to initialize Exposed Database.connect() with DataSource. Configure transaction management using Spring's @Transactional annotation support. Add database initialization check to ensure connection is working properly.",
+            "status": "pending",
+            "testStrategy": "Test database connection is established successfully, Exposed can connect to MySQL, connection pool is configured correctly"
+          },
+          {
+            "id": 4,
+            "title": "Implement Data Access Objects (DAOs)",
+            "description": "Create DAO classes for each table to handle database operations using Exposed ORM",
+            "dependencies": [
+              "2.3"
+            ],
+            "details": "Create DAO classes for each table: UserDao, CharacterDao, ItemDao, InventoryDao, QuestDao, CompletedQuestDao, DailyBuffDao, StageDao. Implement basic CRUD operations using Exposed DSL: create(), findById(), findAll(), update(), delete(). Use transaction blocks for database operations. Implement specific query methods like findByUsername() for UserDao, findByUserId() for CharacterDao, etc. Handle nullable results properly with Kotlin null safety. Add proper exception handling for database constraints violations. Use ResultRow.toEntity() extension functions for mapping database rows to data classes.",
+            "status": "pending",
+            "testStrategy": "Test all CRUD operations work correctly, foreign key relationships are maintained at application level, proper exception handling for constraint violations"
+          },
+          {
+            "id": 5,
+            "title": "Create Entity Data Classes and Repository Layer",
+            "description": "Define entity data classes and repository interfaces to abstract database access layer",
+            "dependencies": [
+              "2.4"
+            ],
+            "details": "Create data classes for each entity: User, Character, Item, Inventory, Quest, CompletedQuest, DailyBuff, Stage. Include all necessary properties matching database columns with appropriate Kotlin types (Long?, String, Int, LocalDateTime, Boolean, enums). Create repository interfaces: UserRepository, CharacterRepository, ItemRepository, etc. with method signatures for common operations. Implement repository classes using the DAO layer created in previous subtask. Add extension functions to convert between ResultRow and entity data classes. Configure proper JSON serialization for API responses using Jackson annotations. Add validation annotations where appropriate.",
+            "status": "pending",
+            "testStrategy": "Verify entity classes serialize/deserialize correctly, repository methods return proper entity objects, all database operations work through repository layer"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Implement API Key Authentication Filter",
+        "description": "Create custom authentication filter to validate X-API-KEY header for user identification",
+        "details": "Implement ApiKeyAuthenticationFilter extending OncePerRequestFilter. Check X-API-KEY header in requests, validate against Users table api_key column. Set SecurityContext with authenticated user info. Create ApiKeyAuthenticationProvider and configure in SecurityConfig. Generate secure random API keys using SecureRandom with UUID. Implement middleware to extract current user from SecurityContext. Add exception handling for invalid/missing API keys with proper HTTP status codes (401 Unauthorized).",
+        "testStrategy": "Test with valid API key returns 200, invalid key returns 401, missing key returns 401. Verify user context is properly set and accessible in controllers.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create ApiKeyAuthenticationFilter Class",
+            "description": "Implement the core authentication filter that extends OncePerRequestFilter to intercept HTTP requests and validate API keys",
+            "dependencies": [],
+            "details": "Create ApiKeyAuthenticationFilter class extending OncePerRequestFilter. Override doFilterInternal method to extract X-API-KEY header from HttpServletRequest. Implement logic to skip authentication for public endpoints (like /api/auth/login). If API key is present, create ApiKeyAuthenticationToken and pass to AuthenticationManager. If authentication succeeds, set SecurityContextHolder with authenticated user. If fails or missing, continue filter chain without authentication (let other components handle 401).",
+            "status": "pending",
+            "testStrategy": "Unit test filter extracts header correctly, creates proper authentication token, handles missing headers gracefully, skips public endpoints"
+          },
+          {
+            "id": 2,
+            "title": "Implement ApiKeyAuthenticationProvider",
+            "description": "Create authentication provider to validate API keys against the Users table and create authenticated user context",
+            "dependencies": [
+              "3.1"
+            ],
+            "details": "Create ApiKeyAuthenticationProvider implementing AuthenticationProvider. Override authenticate method to accept ApiKeyAuthenticationToken. Query Users table by api_key column to find matching user. If user found and active, create UsernamePasswordAuthenticationToken with user details and authorities. If not found, throw BadCredentialsException. Implement supports method to return true for ApiKeyAuthenticationToken class. Add proper error handling for database connection issues.",
+            "status": "pending",
+            "testStrategy": "Test valid API key returns authenticated user, invalid key throws BadCredentialsException, database errors are handled properly, user authorities are set correctly"
+          },
+          {
+            "id": 3,
+            "title": "Configure Security Filter Chain",
+            "description": "Update SecurityConfig to integrate the API key authentication filter and provider into Spring Security chain",
+            "dependencies": [
+              "3.1",
+              "3.2"
+            ],
+            "details": "Update SecurityConfig class to register ApiKeyAuthenticationProvider with AuthenticationManager. Add ApiKeyAuthenticationFilter to security filter chain before UsernamePasswordAuthenticationFilter. Configure filter to apply to all API endpoints except public ones (/api/auth/**). Set up proper exception handling with AuthenticationEntryPoint for 401 responses. Configure CORS and CSRF settings appropriately for API key authentication. Ensure filter order doesn't conflict with existing authentication mechanisms.",
+            "status": "pending",
+            "testStrategy": "Integration test that security chain processes API key authentication, proper 401 responses for invalid keys, CORS headers are set correctly, filter ordering works as expected"
+          },
+          {
+            "id": 4,
+            "title": "Implement API Key Generation and Management",
+            "description": "Create service methods for generating secure API keys and managing them in the Users table",
+            "dependencies": [],
+            "details": "Create ApiKeyService with generateApiKey method using SecureRandom and UUID for cryptographically secure keys. Format as 'ak_' + UUID.randomUUID().toString().replace('-', ''). Add method to update user's api_key column in database. Implement key rotation functionality for security. Add validation method to check key format and uniqueness. Create method to revoke API keys by setting to null. Ensure generated keys are URL-safe and have sufficient entropy (minimum 32 characters).",
+            "status": "pending",
+            "testStrategy": "Test generated keys are unique and secure, key format validation works, database updates succeed, key rotation maintains user access, revocation works properly"
+          },
+          {
+            "id": 5,
+            "title": "Add User Context Middleware and Exception Handling",
+            "description": "Implement middleware to extract current user from SecurityContext and add comprehensive error handling for authentication failures",
+            "dependencies": [
+              "3.3"
+            ],
+            "details": "Create UserContextService with getCurrentUser method that extracts authenticated user from SecurityContextHolder. Add null checks and proper exception handling for unauthenticated requests. Create custom exceptions: InvalidApiKeyException, MissingApiKeyException. Implement GlobalExceptionHandler with @ExceptionHandler methods for authentication exceptions returning proper HTTP 401 status with JSON error responses. Add logging for authentication attempts and failures. Create utility methods for controllers to easily access current user information.",
+            "status": "pending",
+            "testStrategy": "Test current user extraction works in authenticated requests, proper 401 JSON responses for auth failures, exception handling covers all authentication scenarios, logging captures security events appropriately"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Implement User Registration and Login APIs",
+        "description": "Create authentication endpoints for user registration and API key retrieval",
+        "details": "Implement AuthController with POST /auth/register (username, password) and POST /auth/login (username, password). Registration: validate unique username, hash password using BCrypt, generate unique API key, save to Users table, return API key. Login: validate credentials, return existing API key. Add input validation, password strength requirements, and proper error handling. Create UserService with methods: registerUser(), authenticateUser(), generateApiKey(). Add DTOs: RegisterRequest, LoginRequest, AuthResponse.",
+        "testStrategy": "Test successful registration returns API key, duplicate username returns 409, invalid credentials return 401, password validation works correctly.",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Authentication DTOs and Request/Response Models",
+            "description": "Create data transfer objects for authentication endpoints including request validation and response structures",
+            "dependencies": [],
+            "details": "Create RegisterRequest DTO with username and password fields, add validation annotations (@NotBlank, @Size for username min 3 chars, password min 8 chars with complexity requirements). Create LoginRequest DTO with username and password fields. Create AuthResponse DTO with apiKey field and optional message field. Add password strength validation using regex pattern requiring uppercase, lowercase, number, and special character. Include proper error message constants for validation failures.",
+            "status": "pending",
+            "testStrategy": "Test DTO validation annotations work correctly, password strength requirements are enforced, serialization/deserialization works properly"
+          },
+          {
+            "id": 2,
+            "title": "Implement UserService with Core Authentication Logic",
+            "description": "Create UserService class with methods for user registration, authentication, and API key generation",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "Create UserService with registerUser() method that checks username uniqueness, hashes password using BCrypt with strength 12, generates UUID-based API key, and saves user to database. Implement authenticateUser() method that validates credentials using BCrypt.checkpw(). Create generateApiKey() method using UUID.randomUUID() with prefix 'api_'. Add proper exception handling for duplicate usernames (throw UserAlreadyExistsException) and invalid credentials (throw InvalidCredentialsException). Inject UserRepository for database operations.",
+            "status": "pending",
+            "testStrategy": "Test successful user registration, duplicate username handling, password hashing verification, API key generation uniqueness, credential validation"
+          },
+          {
+            "id": 3,
+            "title": "Create AuthController with Registration and Login Endpoints",
+            "description": "Implement REST controller with POST endpoints for user registration and login functionality",
+            "dependencies": [
+              "4.1",
+              "4.2"
+            ],
+            "details": "Create AuthController with @RestController and @RequestMapping('/auth'). Implement POST /auth/register endpoint accepting RegisterRequest, calling UserService.registerUser(), returning AuthResponse with 201 status. Implement POST /auth/login endpoint accepting LoginRequest, calling UserService.authenticateUser(), returning AuthResponse with existing API key. Add @Valid annotations for request validation. Include proper HTTP status codes: 201 for registration, 200 for login, 409 for duplicate username, 401 for invalid credentials.",
+            "status": "pending",
+            "testStrategy": "Test registration endpoint returns API key with 201 status, login endpoint returns existing API key, proper error responses for validation failures and business logic errors"
+          },
+          {
+            "id": 4,
+            "title": "Add Input Validation and Error Handling",
+            "description": "Implement comprehensive input validation, password strength requirements, and global error handling for authentication endpoints",
+            "dependencies": [
+              "4.3"
+            ],
+            "details": "Create @ControllerAdvice class AuthExceptionHandler to handle UserAlreadyExistsException (409 status), InvalidCredentialsException (401 status), and MethodArgumentNotValidException (400 status). Add custom password validator annotation @ValidPassword with implementation checking minimum 8 characters, uppercase, lowercase, number, and special character. Create error response DTO with timestamp, status, error, and message fields. Add rate limiting considerations for login attempts. Include proper logging for security events.",
+            "status": "pending",
+            "testStrategy": "Test password validation rejects weak passwords, error handler returns proper HTTP status codes and error messages, validation errors are properly formatted"
+          },
+          {
+            "id": 5,
+            "title": "Integration Testing and Security Hardening",
+            "description": "Create comprehensive integration tests and implement security best practices for authentication system",
+            "dependencies": [
+              "4.4"
+            ],
+            "details": "Create AuthControllerIntegrationTest with @SpringBootTest and @AutoConfigureTestDatabase. Test complete registration flow, login flow, duplicate username scenarios, invalid credentials, password validation edge cases. Add security headers configuration in SecurityConfig. Implement request logging for authentication attempts. Add API key format validation. Create database constraints for username uniqueness. Test concurrent registration attempts with same username. Verify BCrypt salt randomization. Add input sanitization to prevent injection attacks.",
+            "status": "pending",
+            "testStrategy": "Run integration tests covering all authentication scenarios, verify security headers are present, test concurrent access scenarios, validate API key uniqueness across multiple registrations"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Implement Character CRUD Operations",
+        "description": "Create character management system with CRUD operations and EXP/level mechanics",
+        "details": "Implement CharacterController with endpoints: GET /api/characters (list user's characters), POST /api/characters (create new character), GET /api/characters/{id}, PUT /api/characters/{id}, DELETE /api/characters/{id}. Create CharacterService with level calculation logic: level = floor(sqrt(exp/100)). Implement stat calculation based on level: base stats + level multipliers. Add character creation validation (name uniqueness per user, initial stats). Create DTOs: CharacterRequest, CharacterResponse, CharacterStatsResponse. Implement experience gain method: addExperience(amount) with automatic level up.",
+        "testStrategy": "Test CRUD operations work correctly, EXP to level conversion is accurate, stat calculations are correct, user can only access their own characters.",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Character DTOs and Request/Response Models",
+            "description": "Design and implement data transfer objects for character operations including request validation and response formatting",
+            "dependencies": [],
+            "details": "Create CharacterRequest DTO with fields: name (required, 3-50 chars), description (optional, max 500 chars). Create CharacterResponse DTO with fields: id, name, description, level, experience, createdAt, updatedAt. Create CharacterStatsResponse DTO with fields: characterId, level, baseStats (hp, attack, defense), levelMultipliers, totalStats (calculated). Add validation annotations: @NotBlank for name, @Size constraints, @Valid for nested objects. Include Jackson annotations for JSON serialization.",
+            "status": "pending",
+            "testStrategy": "Test DTO validation rules work correctly, JSON serialization/deserialization functions properly, field constraints are enforced"
+          },
+          {
+            "id": 2,
+            "title": "Implement Character Entity and Repository Layer",
+            "description": "Create Character entity with database mapping and repository interface for data persistence",
+            "dependencies": [
+              "5.1"
+            ],
+            "details": "Create Character entity with fields: id (Long, auto-generated), name (String, not null), description (String), experience (Integer, default 0), userId (Long, foreign key), createdAt, updatedAt (timestamps). Add JPA annotations: @Entity, @Table with unique constraint on (name, userId), @ManyToOne relationship to User. Create CharacterRepository extending JpaRepository with custom methods: findByUserId(Long userId), findByUserIdAndId(Long userId, Long id), existsByUserIdAndName(Long userId, String name).",
+            "status": "pending",
+            "testStrategy": "Test entity persistence works correctly, unique constraints are enforced, repository methods return expected results, foreign key relationships function properly"
+          },
+          {
+            "id": 3,
+            "title": "Implement Character Service with Level and Stats Logic",
+            "description": "Create service layer with business logic for character management, level calculation, and stat computation",
+            "dependencies": [
+              "5.2"
+            ],
+            "details": "Create CharacterService with methods: createCharacter(userId, request), getCharactersByUser(userId), getCharacterById(userId, characterId), updateCharacter(userId, characterId, request), deleteCharacter(userId, characterId). Implement level calculation: level = floor(sqrt(experience/100)). Implement stat calculation with base stats (HP: 100, Attack: 10, Defense: 5) and level multipliers (HP: +20/level, Attack: +3/level, Defense: +2/level). Add addExperience(characterId, amount) method with automatic level up detection. Include name uniqueness validation per user.",
+            "status": "pending",
+            "testStrategy": "Test level calculation formula is accurate, stat calculations include base + level bonuses, experience gain triggers level ups correctly, validation prevents duplicate names per user"
+          },
+          {
+            "id": 4,
+            "title": "Create Character Controller with REST Endpoints",
+            "description": "Implement REST controller with all CRUD endpoints for character management",
+            "dependencies": [
+              "5.3"
+            ],
+            "details": "Create CharacterController with endpoints: GET /api/characters (returns user's characters list), POST /api/characters (creates new character with validation), GET /api/characters/{id} (returns specific character if owned by user), PUT /api/characters/{id} (updates character if owned by user), DELETE /api/characters/{id} (deletes character if owned by user). Add @RestController, @RequestMapping('/api/characters'), @Autowired CharacterService. Include proper HTTP status codes: 200 for success, 201 for creation, 404 for not found, 403 for unauthorized access. Add request/response body validation with @Valid annotation.",
+            "status": "pending",
+            "testStrategy": "Test all endpoints return correct HTTP status codes, users can only access their own characters, request validation works properly, error responses are formatted correctly"
+          },
+          {
+            "id": 5,
+            "title": "Implement Experience Gain System and Integration Testing",
+            "description": "Complete the character system with experience gain functionality and comprehensive integration testing",
+            "dependencies": [
+              "5.4"
+            ],
+            "details": "Add POST /api/characters/{id}/experience endpoint to CharacterController for gaining experience. Implement experience gain logic in service layer with automatic level up detection and stat recalculation. Add experience gain validation (positive amounts only, reasonable limits). Create integration tests covering full CRUD workflow: character creation, retrieval, updates, deletion, and experience gain. Test user isolation (users cannot access other users' characters). Add error handling for edge cases: character not found, unauthorized access, invalid experience amounts.",
+            "status": "pending",
+            "testStrategy": "Test complete character lifecycle works end-to-end, experience gain correctly updates level and stats, user authorization is enforced across all operations, error scenarios are handled gracefully"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Implement Quest System with CRUD and Completion Logic",
+        "description": "Create quest management system supporting yearly/monthly/weekly goals with completion rewards",
+        "details": "Implement QuestController with endpoints: GET /api/quests, POST /api/quests, GET /api/quests/{id}, PUT /api/quests/{id}, DELETE /api/quests/{id}, POST /api/quests/{id}/complete. Create QuestService with quest types enum (YEARLY, MONTHLY, WEEKLY) and completion logic. When quest completed: mark as completed, add entry to CompletedQuests, award EXP/coins to user's character, trigger level up if needed. Add quest filtering by type and completion status. Create DTOs: QuestRequest, QuestResponse, QuestCompletionResponse. Implement reward calculation based on quest type (yearly=1000 EXP, monthly=300 EXP, weekly=100 EXP).",
+        "testStrategy": "Test quest CRUD operations, completion awards correct EXP, character levels up appropriately, completed quests are tracked, user can only manage their own quests.",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Quest Entity and DTOs",
+            "description": "Create the Quest entity with all necessary fields and corresponding Data Transfer Objects for API communication",
+            "dependencies": [],
+            "details": "Create Quest entity with fields: id, title, description, questType (enum: YEARLY, MONTHLY, WEEKLY), isCompleted, userId, createdAt, updatedAt. Create CompletedQuests entity with questId, userId, completedAt, expAwarded, coinsAwarded. Create DTOs: QuestRequest (title, description, questType), QuestResponse (id, title, description, questType, isCompleted, createdAt), QuestCompletionResponse (quest, expAwarded, coinsAwarded, leveledUp, newLevel). Add JPA repositories for Quest and CompletedQuests entities.",
+            "status": "pending",
+            "testStrategy": "Test entity creation, DTO mapping, and repository basic operations"
+          },
+          {
+            "id": 2,
+            "title": "Implement QuestService with Business Logic",
+            "description": "Create QuestService with core quest management and completion logic including reward calculation",
+            "dependencies": [
+              "6.1"
+            ],
+            "details": "Implement QuestService with methods: createQuest, getQuestById, updateQuest, deleteQuest, getUserQuests, completeQuest. Add quest filtering by type and completion status. Implement reward calculation: YEARLY=1000 EXP, MONTHLY=300 EXP, WEEKLY=100 EXP. In completeQuest method: validate quest ownership, mark as completed, create CompletedQuests entry, award EXP/coins to user's character, check for level up using existing CharacterService. Add validation to prevent completing already completed quests.",
+            "status": "pending",
+            "testStrategy": "Test quest CRUD operations, completion logic, reward calculations, and level up triggers"
+          },
+          {
+            "id": 3,
+            "title": "Create QuestController with REST Endpoints",
+            "description": "Implement REST controller with all required quest management endpoints",
+            "dependencies": [
+              "6.2"
+            ],
+            "details": "Create QuestController with endpoints: GET /api/quests (with optional type and status filters), POST /api/quests, GET /api/quests/{id}, PUT /api/quests/{id}, DELETE /api/quests/{id}. Add authentication to ensure users can only access their own quests. Implement proper HTTP status codes and error handling. Add request validation using @Valid annotations. Include pagination for quest listing. Use QuestService for all business logic operations.",
+            "status": "pending",
+            "testStrategy": "Test all CRUD endpoints, authentication, authorization, and proper HTTP responses"
+          },
+          {
+            "id": 4,
+            "title": "Implement Quest Completion Endpoint",
+            "description": "Create the quest completion endpoint with reward processing and response handling",
+            "dependencies": [
+              "6.3"
+            ],
+            "details": "Add POST /api/quests/{id}/complete endpoint to QuestController. Implement completion logic that calls QuestService.completeQuest method. Return QuestCompletionResponse with quest details, awarded EXP/coins, level up status, and new character level if applicable. Add proper error handling for cases like quest not found, quest already completed, or quest not owned by user. Include transaction management to ensure atomicity of completion process.",
+            "status": "pending",
+            "testStrategy": "Test quest completion awards correct EXP, character levels up appropriately, completed quests are tracked, and users can only complete their own quests"
+          },
+          {
+            "id": 5,
+            "title": "Add Quest Filtering and Validation",
+            "description": "Implement advanced quest filtering capabilities and comprehensive validation rules",
+            "dependencies": [
+              "6.4"
+            ],
+            "details": "Enhance quest listing with filtering by questType (YEARLY, MONTHLY, WEEKLY) and completion status (completed, pending). Add query parameters to GET /api/quests endpoint. Implement comprehensive validation: quest title length limits, description requirements, valid quest types. Add business rules validation: users can only have limited number of active quests per type, prevent duplicate quest titles per user. Include sorting options by creation date, completion status, and quest type.",
+            "status": "pending",
+            "testStrategy": "Test filtering works correctly, validation rules are enforced, sorting functions properly, and business rules prevent invalid operations"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Implement Daily Fortune and Buff System",
+        "description": "Create daily fortune system with random buffs based on user ID and date seed",
+        "details": "Implement FortuneController with GET /api/fortune/today endpoint. Create FortuneService that generates deterministic daily fortune using seed = userId + currentDate. Define fortune messages array and buff types (EXP_MULTIPLIER, DROP_RATE_BOOST, STAT_BOOST). Generate daily buff with Random(seed) for consistency. Store/retrieve daily buffs in DailyBuffs table. Create fortune response with message, buff type, and multiplier value. Implement buff application logic in quest completion and other reward systems. Add fortune message templates with Korean philosophical/motivational content.",
+        "testStrategy": "Test same user gets same fortune on same day, different users get different fortunes, buffs are applied correctly to rewards, fortune changes daily.",
+        "priority": "medium",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create DailyBuffs Database Table and Entity",
+            "description": "Set up the database infrastructure for storing daily fortune buffs with proper schema design and entity mapping",
+            "dependencies": [],
+            "details": "Create DailyBuffs table with columns: id (primary key), user_id (foreign key to Users), date (DATE), buff_type (enum: EXP_MULTIPLIER, DROP_RATE_BOOST, STAT_BOOST), multiplier_value (decimal), created_at, updated_at. Add unique constraint on (user_id, date) to ensure one buff per user per day. Create corresponding JPA entity class with proper annotations and relationships to User entity. Include enum class for BuffType with appropriate values.",
+            "status": "pending",
+            "testStrategy": "Test table creation, entity mapping, unique constraints work properly, and foreign key relationships are established correctly"
+          },
+          {
+            "id": 2,
+            "title": "Implement FortuneService with Deterministic Random Generation",
+            "description": "Create the core service class that generates consistent daily fortunes using user ID and date as seed",
+            "dependencies": [
+              "7.1"
+            ],
+            "details": "Create FortuneService class with generateDailyFortune(userId, date) method. Implement deterministic random generation using seed = userId + date string (e.g., '2024-01-15'). Define arrays of Korean philosophical fortune messages (at least 20 messages) with motivational content. Create buff generation logic using Random(seed) to select buff type and calculate multiplier values (EXP_MULTIPLIER: 1.1-1.5x, DROP_RATE_BOOST: 1.2-1.8x, STAT_BOOST: 1.1-1.3x). Implement database operations to store/retrieve daily buffs with duplicate prevention.",
+            "status": "pending",
+            "testStrategy": "Test same user gets identical fortune on same day, different users get different fortunes, random seed produces consistent results, database operations work correctly"
+          },
+          {
+            "id": 3,
+            "title": "Create FortuneController with REST API Endpoint",
+            "description": "Implement the REST controller to expose the daily fortune functionality through HTTP API",
+            "dependencies": [
+              "7.2"
+            ],
+            "details": "Create FortuneController class with GET /api/fortune/today endpoint. Implement proper authentication to get current user from security context. Call FortuneService to get or generate today's fortune. Create FortuneResponse DTO with fields: message (String), buffType (enum), multiplierValue (BigDecimal), date (LocalDate). Add proper error handling for invalid requests and service exceptions. Include appropriate HTTP status codes and response headers.",
+            "status": "pending",
+            "testStrategy": "Test endpoint returns correct fortune data, authentication works properly, error handling for edge cases, response format matches specification"
+          },
+          {
+            "id": 4,
+            "title": "Implement Buff Application Logic in Reward Systems",
+            "description": "Integrate the daily buff system with existing quest completion and reward calculation mechanisms",
+            "dependencies": [
+              "7.3"
+            ],
+            "details": "Modify existing reward calculation services to check for active daily buffs. Create BuffApplicationService to retrieve user's current daily buff and apply multipliers to rewards. Update quest completion logic to apply EXP_MULTIPLIER to experience gains. Implement DROP_RATE_BOOST for item drop calculations in gacha or quest rewards. Add STAT_BOOST application to character stat calculations. Create helper methods to check buff expiration (daily reset at midnight). Ensure buff effects are applied consistently across all reward systems.",
+            "status": "pending",
+            "testStrategy": "Test buffs are correctly applied to different reward types, multipliers calculate accurately, buff expiration works properly, integration with existing systems is seamless"
+          },
+          {
+            "id": 5,
+            "title": "Add Fortune Message Templates and Localization",
+            "description": "Create comprehensive fortune message content with Korean philosophical themes and proper formatting",
+            "dependencies": [
+              "7.2"
+            ],
+            "details": "Expand fortune message arrays with at least 50 unique Korean philosophical and motivational messages. Organize messages by categories: wisdom quotes, motivational phrases, philosophical insights, daily encouragement. Implement message formatting with proper Korean typography and spacing. Add seasonal or contextual message variations if applicable. Create message selection logic that considers buff type for thematic consistency (e.g., strength-themed messages for STAT_BOOST). Include fallback messages for edge cases.",
+            "status": "pending",
+            "testStrategy": "Test message variety and randomness, Korean text displays correctly, messages are appropriate for buff types, no duplicate or inappropriate content appears"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Implement Item and Gacha System",
+        "description": "Create item database and gacha system for random item acquisition",
+        "details": "Implement ItemController with endpoints: GET /api/items (list available items), POST /api/items/gacha (perform gacha pull). Create ItemService with predefined items database including weapons, armor, accessories with different rarities (COMMON, RARE, EPIC, LEGENDARY). Implement gacha logic with rarity-based probability (Common 60%, Rare 30%, Epic 8%, Legendary 2%). Add items to user inventory after gacha. Create item stat bonuses (attack, defense, hp boosts). Implement gacha cost system (coins required). Add DTOs: ItemResponse, GachaRequest, GachaResponse. Define item types enum (WEAPON, ARMOR, ACCESSORY).",
+        "testStrategy": "Test gacha returns items with correct probability distribution, items are added to inventory, gacha costs are deducted, item stats are correctly defined.",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Item Entity and Database Schema",
+            "description": "Define the Item entity with all necessary properties including type, rarity, stats, and create the database table structure",
+            "dependencies": [],
+            "details": "Create Item entity with fields: id, name, description, type (WEAPON/ARMOR/ACCESSORY), rarity (COMMON/RARE/EPIC/LEGENDARY), attackBonus, defenseBonus, hpBonus, iconUrl. Create ItemType and ItemRarity enums. Set up JPA annotations and database table creation. Create repository interface extending JpaRepository for basic CRUD operations.",
+            "status": "pending",
+            "testStrategy": "Test entity creation, database table generation, and repository basic operations"
+          },
+          {
+            "id": 2,
+            "title": "Implement Item Service with Predefined Items Database",
+            "description": "Create ItemService with predefined items for each type and rarity, implementing the core item management logic",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "Create ItemService class with @PostConstruct method to populate database with predefined items. Define items for each combination of type and rarity with appropriate stat bonuses. Implement methods: getAllItems(), getItemById(), getItemsByType(), getItemsByRarity(). Create stat bonus scaling based on rarity (Common: 1-5, Rare: 6-15, Epic: 16-30, Legendary: 31-50).",
+            "status": "pending",
+            "testStrategy": "Test predefined items are created correctly, service methods return expected results, stat bonuses scale appropriately by rarity"
+          },
+          {
+            "id": 3,
+            "title": "Implement Gacha Logic and Probability System",
+            "description": "Create the gacha system with rarity-based probability distribution and random item selection logic",
+            "dependencies": [
+              "8.2"
+            ],
+            "details": "Implement GachaService with performGacha() method using weighted random selection. Create probability weights: Common 60%, Rare 30%, Epic 8%, Legendary 2%. Use Random class with cumulative probability ranges. Implement item selection within chosen rarity tier. Add gacha cost validation (deduct coins from user). Create methods: calculateRarity(), selectRandomItemByRarity(), validateGachaCost().",
+            "status": "pending",
+            "testStrategy": "Test probability distribution matches expected percentages over large sample size, gacha cost is properly deducted, random selection works correctly"
+          },
+          {
+            "id": 4,
+            "title": "Create DTOs and Item Controller Endpoints",
+            "description": "Implement the REST API endpoints for item listing and gacha functionality with proper DTOs",
+            "dependencies": [
+              "8.3"
+            ],
+            "details": "Create DTOs: ItemResponse (id, name, description, type, rarity, stats), GachaRequest (userId, gachaCost), GachaResponse (item, remainingCoins, success). Implement ItemController with @RestController annotation. Add GET /api/items endpoint returning List<ItemResponse>. Add POST /api/items/gacha endpoint accepting GachaRequest and returning GachaResponse. Include proper error handling and validation.",
+            "status": "pending",
+            "testStrategy": "Test endpoints return correct HTTP status codes, DTOs serialize properly, error handling works for insufficient coins"
+          },
+          {
+            "id": 5,
+            "title": "Integrate Inventory System for Gacha Items",
+            "description": "Connect gacha system with user inventory to store acquired items and update user coins",
+            "dependencies": [
+              "8.4"
+            ],
+            "details": "Modify GachaService to integrate with InventoryService (from task 9). After successful gacha pull, add item to user's inventory using InventoryService.addItemToInventory(). Update user's coin balance in UserService. Implement transaction management with @Transactional to ensure atomicity. Add validation to check user exists and has sufficient coins before gacha. Handle inventory capacity if applicable.",
+            "status": "pending",
+            "testStrategy": "Test items are added to inventory after gacha, user coins are properly deducted, transactions rollback on failure, user validation works correctly"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Implement Inventory and Equipment System",
+        "description": "Create inventory management and item equipment functionality",
+        "details": "Implement InventoryController with endpoints: GET /api/inventory (user's items), POST /api/items/{id}/equip, POST /api/items/{id}/unequip. Create InventoryService to manage item ownership and equipment slots (WEAPON, ARMOR, ACCESSORY). Implement equipment logic: only one item per slot, unequip previous item when equipping new one, apply stat bonuses to character when equipped. Add equipped item tracking in Inventories table with equipped_slot column. Calculate total character stats including equipment bonuses. Create DTOs: InventoryResponse, EquipmentResponse. Add validation for item ownership and equipment compatibility.",
+        "testStrategy": "Test inventory displays user's items correctly, equipment/unequipment works properly, stat bonuses are applied/removed correctly, users can only equip their own items.",
+        "priority": "medium",
+        "dependencies": [
+          8
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Extend Inventories Table Schema for Equipment Tracking",
+            "description": "Modify the existing Inventories table to support equipment functionality by adding an equipped_slot column to track which equipment slot an item occupies when equipped",
+            "dependencies": [],
+            "details": "Add equipped_slot column to Inventories table as VARCHAR(20) allowing values: 'WEAPON', 'ARMOR', 'ACCESSORY', or NULL for unequipped items. Create database migration script to alter the existing table structure. Update the Inventory entity model to include the equipped_slot field with appropriate JPA annotations. Ensure the column allows NULL values for backward compatibility with existing inventory records.",
+            "status": "pending",
+            "testStrategy": "Test database migration runs successfully, verify equipped_slot column accepts valid enum values and NULL, confirm existing inventory data remains intact after migration"
+          },
+          {
+            "id": 2,
+            "title": "Create Equipment DTOs and Response Models",
+            "description": "Design and implement Data Transfer Objects for inventory and equipment operations to handle API request/response data structures",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Create InventoryResponse DTO containing item details (id, name, type, rarity, stats), equipped status, and equipped_slot information. Implement EquipmentResponse DTO for equipment operation results including success status, updated character stats, and equipped item details. Add validation annotations for equipment slot types. Include character stat calculations in response models to show total stats including equipment bonuses. Ensure DTOs properly serialize equipped and unequipped items differently.",
+            "status": "pending",
+            "testStrategy": "Test DTOs serialize/deserialize correctly, validation annotations work for equipment slots, response models include all required fields for frontend consumption"
+          },
+          {
+            "id": 3,
+            "title": "Implement Core InventoryService with Equipment Logic",
+            "description": "Create the business logic service to handle inventory management and equipment operations including slot management and stat calculations",
+            "dependencies": [
+              "9.1",
+              "9.2"
+            ],
+            "details": "Implement InventoryService with methods: getUserInventory(), equipItem(), unequipItem(). Add equipment slot validation ensuring only one item per slot type (WEAPON, ARMOR, ACCESSORY). Implement auto-unequip logic when equipping new item to occupied slot. Create stat calculation methods that aggregate base character stats with equipped item bonuses. Add item ownership validation to prevent users from equipping items they don't own. Include equipment compatibility checks based on item type and character requirements.",
+            "status": "pending",
+            "testStrategy": "Test equipment slot constraints work correctly, auto-unequip functionality operates properly, stat calculations include equipment bonuses accurately, ownership validation prevents unauthorized equipment"
+          },
+          {
+            "id": 4,
+            "title": "Develop InventoryController REST Endpoints",
+            "description": "Create REST API endpoints for inventory management and equipment operations with proper request handling and response formatting",
+            "dependencies": [
+              "9.2",
+              "9.3"
+            ],
+            "details": "Implement GET /api/inventory endpoint returning user's complete inventory with equipped status indicators. Create POST /api/items/{id}/equip endpoint for equipping items with validation and stat recalculation. Implement POST /api/items/{id}/unequip endpoint for removing equipped items. Add proper HTTP status codes (200 for success, 400 for validation errors, 404 for item not found). Include authentication checks to ensure users can only access their own inventory. Implement error handling for invalid equipment operations.",
+            "status": "pending",
+            "testStrategy": "Test all endpoints return correct HTTP status codes, authentication prevents unauthorized access, equipment operations update database correctly, error responses provide meaningful messages"
+          },
+          {
+            "id": 5,
+            "title": "Integrate Equipment System with Character Stats",
+            "description": "Connect the equipment system with the existing character system to dynamically calculate and update total character statistics including equipment bonuses",
+            "dependencies": [
+              "9.3",
+              "9.4"
+            ],
+            "details": "Modify CharacterService to include equipment bonuses in total stat calculations. Update character stat retrieval methods to aggregate base stats with equipped item bonuses. Implement real-time stat updates when items are equipped/unequipped. Add equipment summary to character profile responses showing currently equipped items. Create helper methods to calculate total attack, defense, and HP including all equipment modifiers. Ensure character level-up calculations work correctly with equipment bonuses.",
+            "status": "pending",
+            "testStrategy": "Test character stats update immediately when equipment changes, total stats correctly sum base and equipment bonuses, character responses include equipment information, level progression works with equipment modifications"
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Implement Life Timeline Stage System",
+        "description": "Create life stage system representing 10-year chapters with age-based progression",
+        "details": "Implement StageController with endpoints: GET /api/stages (all stages), GET /api/stages/current (user's current stage based on age). Create StageService with predefined life stages: 0-10 (Childhood), 10-20 (Youth), 20-30 (Early Adulthood), 30-40 (Career Building), 40-50 (Maturity), 50-60 (Wisdom), 60-70 (Elder), 70+ (Legacy). Add user birthdate to Users table for age calculation. Implement current stage detection based on user age. Create stage descriptions with philosophical/motivational content. Add stage progression tracking and achievements. Create DTOs: StageResponse, CurrentStageResponse.",
+        "testStrategy": "Test age calculation is correct, current stage detection works properly, stage descriptions are meaningful, stage progression is tracked accurately.",
+        "priority": "medium",
+        "dependencies": [
+          9
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add birthdate field to Users table and update user model",
+            "description": "Extend the Users table to include birthdate information required for age calculation and stage determination",
+            "dependencies": [],
+            "details": "Create database migration to add birthdate column (DATE type) to Users table. Update User entity/model to include birthdate field with appropriate validation (not null, reasonable date range). Add birthdate to user registration/profile update endpoints. Implement age calculation utility method that computes current age from birthdate.",
+            "status": "pending",
+            "testStrategy": "Test migration runs successfully, birthdate field accepts valid dates, age calculation returns correct values for various birthdates, validation rejects invalid dates"
+          },
+          {
+            "id": 2,
+            "title": "Create Stage entity and predefined life stages data",
+            "description": "Define the Stage data model and populate it with the 8 predefined life stages with their age ranges and descriptions",
+            "dependencies": [
+              "10.1"
+            ],
+            "details": "Create Stage entity with fields: id, name, minAge, maxAge, description, motivationalContent. Create database migration for stages table. Implement data seeder or initialization script to populate stages: Childhood (0-10), Youth (10-20), Early Adulthood (20-30), Career Building (30-40), Maturity (40-50), Wisdom (50-60), Elder (60-70), Legacy (70+). Include philosophical and motivational descriptions for each stage.",
+            "status": "pending",
+            "testStrategy": "Test Stage entity is properly mapped, database migration creates table correctly, all 8 stages are seeded with correct age ranges and meaningful descriptions"
+          },
+          {
+            "id": 3,
+            "title": "Implement StageService with stage detection logic",
+            "description": "Create service layer to handle stage-related business logic including current stage detection based on user age",
+            "dependencies": [
+              "10.2"
+            ],
+            "details": "Create StageService class with methods: getAllStages(), getCurrentStageForUser(userId), detectStageByAge(age). Implement stage detection algorithm that matches user's current age to appropriate stage age range. Add stage progression tracking logic. Handle edge cases like users older than 70 (Legacy stage). Include caching for stage data since it's relatively static.",
+            "status": "pending",
+            "testStrategy": "Test stage detection returns correct stage for various ages, edge cases are handled properly, service methods return expected data structures, caching improves performance"
+          },
+          {
+            "id": 4,
+            "title": "Create Stage DTOs for API responses",
+            "description": "Define data transfer objects for stage-related API responses to ensure consistent and clean API contracts",
+            "dependencies": [
+              "10.2"
+            ],
+            "details": "Create StageResponse DTO with fields: id, name, ageRange (formatted string like '20-30'), description, motivationalContent. Create CurrentStageResponse DTO extending StageResponse with additional fields: userAge, yearsInStage, yearsUntilNext, progressPercentage. Implement proper JSON serialization and validation annotations.",
+            "status": "pending",
+            "testStrategy": "Test DTOs serialize correctly to JSON, all required fields are included, validation works for input DTOs, response format matches API documentation"
+          },
+          {
+            "id": 5,
+            "title": "Implement StageController with REST endpoints",
+            "description": "Create REST controller with endpoints to expose stage functionality to the frontend application",
+            "dependencies": [
+              "10.3",
+              "10.4"
+            ],
+            "details": "Create StageController with GET /api/stages endpoint returning all available life stages using StageResponse DTOs. Implement GET /api/stages/current endpoint that returns user's current stage based on their age using CurrentStageResponse DTO. Add proper authentication/authorization, error handling for users without birthdate, and appropriate HTTP status codes. Include API documentation annotations.",
+            "status": "pending",
+            "testStrategy": "Test endpoints return correct HTTP status codes, authentication is enforced, response formats match DTOs, error handling works for edge cases like missing birthdate, API documentation is generated correctly"
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Implement Life Percentage Counter API",
+        "description": "Create philosophical life percentage calculation based on user age and life expectancy",
+        "details": "Implement LifeCounterController with GET /api/life/percentage endpoint. Create LifeCounterService that calculates life percentage using formula: (current_age / life_expectancy) * 100. Use configurable life expectancy (default 80 years). Add different calculation modes: optimistic (85 years), realistic (80 years), pessimistic (75 years). Include remaining years, months, days calculations. Add motivational messages based on life percentage ranges. Create philosophical insights about time value. Add DTOs: LifePercentageResponse with percentage, remaining time, and motivational message.",
+        "testStrategy": "Test percentage calculations are mathematically correct, different life expectancy modes work properly, motivational messages are appropriate for age ranges.",
+        "priority": "medium",
+        "dependencies": [
+          10
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Life Percentage DTOs and Configuration",
+            "description": "Create data transfer objects and configuration classes for life percentage calculations",
+            "dependencies": [],
+            "details": "Create LifePercentageResponse DTO with fields: percentage (double), remainingYears (int), remainingMonths (int), remainingDays (int), motivationalMessage (String), philosophicalInsight (String), calculationMode (enum). Create LifeExpectancyMode enum with OPTIMISTIC(85), REALISTIC(80), PESSIMISTIC(75) values. Add configuration properties for default life expectancy values in application.properties.",
+            "status": "pending",
+            "testStrategy": "Test DTO serialization/deserialization, validate enum values, verify configuration property loading"
+          },
+          {
+            "id": 2,
+            "title": "Implement Core Life Percentage Calculation Logic",
+            "description": "Create the service layer with mathematical calculations for life percentage and remaining time",
+            "dependencies": [
+              "11.1"
+            ],
+            "details": "Create LifeCounterService with calculateLifePercentage method using formula: (current_age / life_expectancy) * 100. Implement calculateRemainingTime method to compute years, months, and days remaining. Add support for different calculation modes (optimistic/realistic/pessimistic). Handle edge cases like age exceeding life expectancy (cap at 100%). Include leap year considerations for accurate day calculations.",
+            "status": "pending",
+            "testStrategy": "Unit test percentage calculations with various ages, test remaining time calculations accuracy, verify different life expectancy modes produce correct results"
+          },
+          {
+            "id": 3,
+            "title": "Create Motivational Message System",
+            "description": "Implement dynamic motivational messages based on life percentage ranges",
+            "dependencies": [
+              "11.2"
+            ],
+            "details": "Create MessageService with getMotivationalMessage method that returns different messages based on life percentage ranges: 0-20% (youth/potential focused), 21-40% (growth/opportunity focused), 41-60% (achievement/wisdom focused), 61-80% (legacy/experience focused), 81-100% (gratitude/reflection focused). Store messages in a configuration file or enum. Include randomization to provide variety within each range.",
+            "status": "pending",
+            "testStrategy": "Test message selection for different percentage ranges, verify message appropriateness, test randomization within ranges"
+          },
+          {
+            "id": 4,
+            "title": "Add Philosophical Insights Generator",
+            "description": "Create philosophical insights about time value and life meaning",
+            "dependencies": [
+              "11.3"
+            ],
+            "details": "Extend MessageService with getPhilosophicalInsight method that provides deep, thoughtful insights about time, mortality, and life purpose. Create insights categorized by life stages and percentage ranges. Include quotes from philosophers, time-related wisdom, and reflections on life's finite nature. Implement rotation system to avoid repetitive insights. Focus on positive, meaningful content that encourages reflection without being morbid.",
+            "status": "pending",
+            "testStrategy": "Test insight generation for different life stages, verify content quality and appropriateness, test rotation system prevents repetition"
+          },
+          {
+            "id": 5,
+            "title": "Implement Life Counter Controller and API Endpoint",
+            "description": "Create REST controller with GET /api/life/percentage endpoint",
+            "dependencies": [
+              "11.2",
+              "11.3",
+              "11.4"
+            ],
+            "details": "Create LifeCounterController with GET /api/life/percentage endpoint accepting optional 'mode' query parameter (optimistic/realistic/pessimistic, defaults to realistic). Extract user age from authentication context or require age parameter. Integrate LifeCounterService, MessageService for complete response. Add proper error handling for invalid ages or missing user data. Include API documentation with Swagger annotations. Return LifePercentageResponse with all calculated fields.",
+            "status": "pending",
+            "testStrategy": "Test endpoint with different calculation modes, verify proper error handling for invalid inputs, test authentication integration, validate complete response structure"
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Implement Dashboard API with Aggregated Data",
+        "description": "Create comprehensive dashboard API combining character, quest, and fortune data",
+        "details": "Implement DashboardController with GET /api/dashboard endpoint. Create DashboardService that aggregates: user's main character stats, current week's quests (pending/completed), today's fortune and active buffs, recent achievements, life percentage, current stage info. Optimize with single database queries where possible. Add caching for frequently accessed data. Include quest completion statistics (weekly/monthly progress). Add level progress visualization data. Create comprehensive DashboardResponse DTO with all aggregated information. Implement efficient data fetching to minimize database calls.",
+        "testStrategy": "Test dashboard returns all required data correctly, performance is acceptable with multiple data sources, caching works properly, data is current and accurate.",
+        "priority": "medium",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create DashboardResponse DTO and Data Models",
+            "description": "Design and implement comprehensive data transfer objects for dashboard API response containing all aggregated information",
+            "dependencies": [],
+            "details": "Create DashboardResponse DTO with nested objects for character stats, quest summaries, fortune data, achievements, life metrics, and stage information. Include CharacterStatsDto (level, experience, health, attack, defense, equipped items), QuestSummaryDto (pending/completed counts, weekly/monthly progress), FortuneDto (today's fortune, active buffs), AchievementDto (recent achievements list), LifeMetricsDto (life percentage, remaining time, current stage), and LevelProgressDto (current level progress, next level requirements). Ensure all DTOs are properly annotated for JSON serialization.",
+            "status": "pending",
+            "testStrategy": "Test DTO serialization/deserialization, validate all required fields are present, ensure nested objects structure is correct"
+          },
+          {
+            "id": 2,
+            "title": "Implement DashboardService Core Data Aggregation",
+            "description": "Create service layer to aggregate data from multiple sources including character, quest, fortune, and achievement systems",
+            "dependencies": [
+              "12.1"
+            ],
+            "details": "Implement DashboardService with methods to fetch and aggregate data from CharacterService, QuestService, FortuneService, AchievementService, LifeCounterService, and StageService. Create aggregateUserDashboard(userId) method that combines: user's main character stats with equipped items, current week's quests (pending/completed counts), today's fortune and active buffs, recent achievements (last 5), life percentage and remaining time calculations, current stage information, and level progress data. Implement error handling for missing or invalid data.",
+            "status": "pending",
+            "testStrategy": "Test data aggregation from all services, verify error handling when services return null/empty data, validate data consistency across different sources"
+          },
+          {
+            "id": 3,
+            "title": "Optimize Database Queries and Add Caching Layer",
+            "description": "Implement efficient database queries and caching mechanism to minimize database calls and improve performance",
+            "dependencies": [
+              "12.2"
+            ],
+            "details": "Optimize database queries by implementing batch fetching where possible, using JOIN queries to reduce database roundtrips for related data (character with equipped items, quests with completion status). Implement Redis caching for frequently accessed dashboard data with 5-minute TTL. Create cache keys based on userId and implement cache invalidation strategies when user data changes (quest completion, character level up, item equipment). Add database query optimization for quest statistics (weekly/monthly progress) using efficient date range queries and aggregation functions.",
+            "status": "pending",
+            "testStrategy": "Test query performance with large datasets, verify caching works correctly, test cache invalidation on data updates, measure response time improvements"
+          },
+          {
+            "id": 4,
+            "title": "Implement Quest Statistics and Progress Visualization",
+            "description": "Add comprehensive quest completion statistics and level progress visualization data to dashboard",
+            "dependencies": [
+              "12.2"
+            ],
+            "details": "Implement quest statistics calculation including weekly progress (completed quests this week vs total available), monthly progress tracking, quest completion streaks, and quest type distribution (daily/weekly/special). Add level progress visualization data including current level, experience points, experience needed for next level, progress percentage, and estimated time to next level based on average daily experience gain. Create efficient queries to calculate these statistics without impacting performance, using database aggregation functions and date-based filtering.",
+            "status": "pending",
+            "testStrategy": "Test quest statistics calculations are accurate, verify progress visualization data is correct, test performance with historical quest data, validate date range calculations"
+          },
+          {
+            "id": 5,
+            "title": "Create DashboardController and API Endpoint",
+            "description": "Implement REST controller with GET /api/dashboard endpoint and integrate all dashboard functionality",
+            "dependencies": [
+              "12.1",
+              "12.2",
+              "12.3",
+              "12.4"
+            ],
+            "details": "Create DashboardController with GET /api/dashboard endpoint that requires authentication and returns comprehensive dashboard data. Implement proper error handling, request validation, and response formatting. Add API documentation with Swagger annotations describing all response fields. Implement rate limiting to prevent excessive dashboard requests. Add logging for dashboard access patterns and performance monitoring. Ensure the endpoint handles edge cases like new users with minimal data, users without characters, or missing fortune data gracefully.",
+            "status": "pending",
+            "testStrategy": "Test API endpoint returns complete dashboard data, verify authentication is required, test error handling for various edge cases, validate API documentation is accurate, test rate limiting functionality"
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Implement Buff Application Logic in Reward Systems",
+        "description": "Integrate daily buff effects into quest completion and gacha systems",
+        "details": "Modify QuestService and ItemService to apply active daily buffs. In quest completion: check for EXP_MULTIPLIER buff and apply to reward calculation. In gacha system: check for DROP_RATE_BOOST and modify rarity probabilities. Add buff checking utility method in FortuneService. Implement buff expiration logic (daily reset). Add buff status to character stats calculation for STAT_BOOST buffs. Create buff application logs for debugging. Update reward calculation methods to include buff multipliers. Add buff indicators in API responses.",
+        "testStrategy": "Test EXP multiplier increases quest rewards correctly, drop rate boost affects gacha probabilities, stat boosts are applied to character stats, buffs expire properly at day change.",
+        "priority": "medium",
+        "dependencies": [
+          12
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Buff Checking Utility in FortuneService",
+            "description": "Implement utility methods in FortuneService to check active daily buffs and their expiration status",
+            "dependencies": [],
+            "details": "Add methods to FortuneService: getActiveDailyBuffs(userId) to retrieve all active buffs for a user, isBuffActive(userId, buffType) to check if specific buff is active, and getBuffMultiplier(userId, buffType) to get buff strength. Implement buff expiration logic that checks if buff was created today using daily reset logic. Add logging for buff status checks and expiration events.",
+            "status": "pending",
+            "testStrategy": "Test buff retrieval returns correct active buffs, expiration logic properly identifies expired buffs, buff multiplier values are accurate"
+          },
+          {
+            "id": 2,
+            "title": "Integrate EXP Multiplier Buff in Quest Completion",
+            "description": "Modify QuestService to apply EXP_MULTIPLIER buff effects to quest reward calculations",
+            "dependencies": [
+              "13.1"
+            ],
+            "details": "Update QuestService.completeQuest() method to check for active EXP_MULTIPLIER buff using FortuneService utility. If buff is active, multiply base EXP reward by buff multiplier before awarding to user. Add buff application logging to track when EXP multipliers are applied. Update quest completion response to include buff information and final calculated rewards. Ensure buff is only applied once per quest completion.",
+            "status": "pending",
+            "testStrategy": "Test EXP rewards are correctly multiplied when buff is active, no multiplication occurs when buff is inactive or expired, logging captures buff applications"
+          },
+          {
+            "id": 3,
+            "title": "Integrate Drop Rate Boost in Gacha System",
+            "description": "Modify ItemService gacha logic to apply DROP_RATE_BOOST buff effects to rarity probabilities",
+            "dependencies": [
+              "13.1"
+            ],
+            "details": "Update ItemService.performGacha() method to check for active DROP_RATE_BOOST buff. If active, modify rarity probabilities by shifting percentages toward higher rarities (e.g., reduce Common by 10%, increase Rare by 5%, Epic by 3%, Legendary by 2%). Ensure total probabilities still equal 100%. Add buff application logging for gacha pulls. Include buff status in gacha response to show modified drop rates were applied.",
+            "status": "pending",
+            "testStrategy": "Test drop rate probabilities are correctly modified when buff is active, probability distribution remains valid (totals 100%), higher rarity items appear more frequently with buff"
+          },
+          {
+            "id": 4,
+            "title": "Implement STAT_BOOST Buff in Character Stats Calculation",
+            "description": "Integrate STAT_BOOST buffs into character stats calculation system",
+            "dependencies": [
+              "13.1"
+            ],
+            "details": "Modify character stats calculation methods to include active STAT_BOOST buffs. Update CharacterService or equivalent to check for active stat buffs and apply percentage or flat bonuses to base stats (attack, defense, HP). Ensure buff bonuses are calculated after equipment bonuses but before final stats display. Add buff indicators to character stats API responses showing which stats are buffed and by how much. Create separate method to calculate buffed vs unbuffed stats.",
+            "status": "pending",
+            "testStrategy": "Test stat boosts are correctly applied to character stats, buffed stats are properly displayed in API responses, stat calculations are accurate with multiple buff types"
+          },
+          {
+            "id": 5,
+            "title": "Add Buff Status Indicators to API Responses",
+            "description": "Update relevant API endpoints to include buff status information and application logs",
+            "dependencies": [
+              "13.2",
+              "13.3",
+              "13.4"
+            ],
+            "details": "Modify API responses for quest completion, gacha pulls, and character stats to include buff status information. Add fields like 'buffsApplied', 'activeBuffs', and 'buffMultipliers' to response objects. Create comprehensive buff application logs for debugging purposes, including timestamps, buff types, multiplier values, and affected calculations. Update dashboard API to show current active buffs and their remaining duration. Ensure buff information is consistently formatted across all endpoints.",
+            "status": "pending",
+            "testStrategy": "Test API responses include accurate buff information, buff logs are created for all applications, buff status is consistently displayed across endpoints"
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Add Comprehensive Error Handling and Validation",
+        "description": "Implement robust error handling, input validation, and API documentation",
+        "details": "Create global exception handler with @ControllerAdvice for consistent error responses. Add input validation using Bean Validation annotations (@Valid, @NotBlank, @Size, etc.). Implement custom exceptions: UserNotFoundException, InvalidApiKeyException, QuestNotFoundException, etc. Add proper HTTP status codes for different error scenarios. Create standardized error response format with error codes and messages. Add request/response logging for debugging. Implement rate limiting for API endpoints. Add OpenAPI/Swagger documentation with @Operation annotations. Create API documentation with example requests/responses.",
+        "testStrategy": "Test all error scenarios return appropriate status codes and messages, input validation catches invalid data, API documentation is complete and accurate, rate limiting works correctly.",
+        "priority": "medium",
+        "dependencies": [
+          13
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Global Exception Handler and Custom Exceptions",
+            "description": "Implement a centralized exception handling system using @ControllerAdvice to provide consistent error responses across all API endpoints",
+            "dependencies": [],
+            "details": "Create GlobalExceptionHandler class with @ControllerAdvice annotation. Implement custom exception classes: UserNotFoundException, InvalidApiKeyException, QuestNotFoundException, InvalidInputException, InsufficientCoinsException. Add @ExceptionHandler methods for each custom exception and common exceptions (IllegalArgumentException, MethodArgumentNotValidException, etc.). Define standardized ErrorResponse class with fields: timestamp, status, error, message, path, errorCode. Map each exception type to appropriate HTTP status codes (404 for NotFound, 400 for BadRequest, 401 for Unauthorized, etc.).",
+            "status": "pending",
+            "testStrategy": "Test that each custom exception returns correct HTTP status code and error format, verify global handler catches all exceptions, test error response structure is consistent"
+          },
+          {
+            "id": 2,
+            "title": "Implement Input Validation with Bean Validation",
+            "description": "Add comprehensive input validation to all API endpoints using Bean Validation annotations and custom validators",
+            "dependencies": [
+              "14.1"
+            ],
+            "details": "Add Bean Validation dependency to pom.xml. Create validation annotations on DTOs and request objects: @Valid, @NotBlank, @NotNull, @Size, @Min, @Max, @Email, @Pattern. Implement custom validators for business logic: @ValidApiKey, @ValidQuestType, @ValidItemRarity. Add @Valid annotations to controller method parameters. Create validation groups for different scenarios (Create, Update operations). Handle MethodArgumentNotValidException in GlobalExceptionHandler to return field-specific error messages.",
+            "status": "pending",
+            "testStrategy": "Test all validation annotations work correctly, verify custom validators function properly, test validation error messages are clear and specific to failed fields"
+          },
+          {
+            "id": 3,
+            "title": "Add Request/Response Logging and Rate Limiting",
+            "description": "Implement comprehensive logging for API requests/responses and rate limiting to protect against abuse",
+            "dependencies": [
+              "14.1"
+            ],
+            "details": "Create LoggingFilter implementing Filter interface to log all HTTP requests/responses with timestamps, user info, endpoints, and response times. Use structured logging with JSON format including request ID for tracing. Implement rate limiting using bucket4j library with @RateLimit annotation. Configure different rate limits per endpoint type: 100 requests/minute for general APIs, 10 requests/minute for gacha endpoints. Store rate limit data in Redis or in-memory cache. Add rate limit headers in responses (X-RateLimit-Remaining, X-RateLimit-Reset).",
+            "status": "pending",
+            "testStrategy": "Test logging captures all request/response details correctly, verify rate limiting blocks excessive requests, test rate limit headers are returned properly"
+          },
+          {
+            "id": 4,
+            "title": "Create OpenAPI/Swagger Documentation",
+            "description": "Add comprehensive API documentation using OpenAPI 3.0 with Swagger UI for interactive documentation",
+            "dependencies": [
+              "14.2"
+            ],
+            "details": "Add springdoc-openapi-ui dependency to pom.xml. Configure OpenAPI in application.yml with API info, servers, and security schemes. Add @Operation annotations to all controller methods with summary, description, and response codes. Use @ApiResponse annotations for different HTTP status codes with example responses. Add @Schema annotations to DTOs with descriptions and examples. Create @Tag annotations for controller grouping. Configure Swagger UI path and customize appearance. Add authentication configuration for API key security.",
+            "status": "pending",
+            "testStrategy": "Test Swagger UI loads correctly and displays all endpoints, verify all endpoints have proper documentation with examples, test API documentation matches actual implementation"
+          },
+          {
+            "id": 5,
+            "title": "Integrate Error Handling with Existing Controllers",
+            "description": "Update all existing controllers to use the new error handling system and ensure consistent error responses",
+            "dependencies": [
+              "14.1",
+              "14.2",
+              "14.3",
+              "14.4"
+            ],
+            "details": "Update UserController, QuestController, InventoryController, ItemController, StageController, and LifeCounterController to throw appropriate custom exceptions instead of returning error responses directly. Replace manual error handling with custom exceptions (throw new UserNotFoundException instead of returning 404 responses). Add @Valid annotations to request parameters where missing. Ensure all endpoints return consistent error format through GlobalExceptionHandler. Update service layer methods to throw business logic exceptions. Add proper HTTP status codes for success scenarios (201 for creation, 204 for deletion).",
+            "status": "pending",
+            "testStrategy": "Test all controllers use consistent error handling, verify no manual error responses remain, test all endpoints return proper status codes and error formats"
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Setup Production Configuration and Deployment",
+        "description": "Configure application for production deployment with free tier database",
+        "details": "Configure production application.yml with environment variables for database connection, API keys, and other sensitive data. Setup HikariCP connection pool with optimal settings for free tier (maxPoolSize=5, connectionTimeout=30000). Add health check endpoints for monitoring. Configure logging levels and log rotation. Setup database migration scripts using Flyway or Liquibase. Add Docker configuration for containerized deployment. Configure for deployment on OCI/AWS free tier. Add monitoring and metrics collection. Setup backup strategy for database. Create deployment documentation with step-by-step instructions.",
+        "testStrategy": "Test application starts correctly in production environment, database connections are stable under load, health checks respond properly, deployment process is repeatable.",
+        "priority": "low",
+        "dependencies": [
+          14
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure Production Application Properties and Environment Variables",
+            "description": "Setup production application.yml with environment-based configuration for database connections, API keys, and sensitive data management",
+            "dependencies": [],
+            "details": "Create application-prod.yml with environment variable placeholders for database URL, username, password, and API keys. Configure HikariCP connection pool with production settings: maxPoolSize=5, connectionTimeout=30000ms, idleTimeout=600000ms, maxLifetime=1800000ms optimized for free tier limits. Setup logging configuration with appropriate levels (INFO for root, WARN for third-party libraries) and log rotation policies. Add Spring profiles configuration to separate development and production environments. Configure server port, context path, and other deployment-specific settings.",
+            "status": "pending",
+            "testStrategy": "Test application starts with production profile, environment variables are properly resolved, database connections are established with correct pool settings"
+          },
+          {
+            "id": 2,
+            "title": "Implement Health Check Endpoints and Monitoring",
+            "description": "Add comprehensive health check endpoints and monitoring capabilities for production deployment",
+            "dependencies": [
+              "15.1"
+            ],
+            "details": "Implement Spring Boot Actuator health endpoints including /actuator/health, /actuator/info, and custom health indicators for database connectivity and application status. Create custom health check controller with endpoints for database ping, memory usage, and application readiness. Add metrics collection using Micrometer for monitoring connection pool usage, request counts, and response times. Configure health check responses to include database status, available memory, and uptime information. Setup security for actuator endpoints to prevent unauthorized access.",
+            "status": "pending",
+            "testStrategy": "Test health endpoints return correct status codes, database health checks detect connection issues, metrics are properly collected and exposed"
+          },
+          {
+            "id": 3,
+            "title": "Setup Database Migration Scripts and Schema Management",
+            "description": "Configure Flyway database migration system for production schema management and version control",
+            "dependencies": [
+              "15.1"
+            ],
+            "details": "Add Flyway dependency to pom.xml and configure migration settings in application-prod.yml. Create migration scripts in src/main/resources/db/migration following naming convention V1__Initial_schema.sql, V2__Add_user_tables.sql, etc. Implement baseline migration with all existing table structures (Users, Characters, Items, Inventories, Stages). Add migration scripts for any schema changes from development. Configure Flyway to run automatically on application startup with validate-on-migrate enabled. Setup migration rollback strategies and backup procedures.",
+            "status": "pending",
+            "testStrategy": "Test migrations run successfully on clean database, existing data is preserved during migrations, rollback procedures work correctly"
+          },
+          {
+            "id": 4,
+            "title": "Create Docker Configuration and Containerization Setup",
+            "description": "Setup Docker configuration for containerized deployment with multi-stage builds and production optimization",
+            "dependencies": [
+              "15.1",
+              "15.2",
+              "15.3"
+            ],
+            "details": "Create Dockerfile with multi-stage build: build stage using Maven image to compile application, runtime stage using OpenJDK slim image for smaller footprint. Configure .dockerignore to exclude unnecessary files. Create docker-compose.yml for local testing with database service. Setup environment variable injection for database connections and API keys. Configure JVM memory settings appropriate for free tier limits (-Xmx512m -Xms256m). Add health check configuration in Docker container. Create build scripts for automated image creation and tagging.",
+            "status": "pending",
+            "testStrategy": "Test Docker image builds successfully, container starts and connects to database, health checks work within container, memory usage stays within limits"
+          },
+          {
+            "id": 5,
+            "title": "Configure Cloud Deployment and Create Documentation",
+            "description": "Setup deployment configuration for OCI/AWS free tier and create comprehensive deployment documentation",
+            "dependencies": [
+              "15.1",
+              "15.2",
+              "15.3",
+              "15.4"
+            ],
+            "details": "Create deployment scripts for OCI Always Free tier or AWS Free Tier including compute instance setup, security group configuration, and database setup. Configure application for cloud deployment with external database connection strings and environment-specific settings. Setup automated backup strategy using cloud provider tools for database snapshots. Create comprehensive deployment documentation including: environment setup steps, database configuration, application deployment process, monitoring setup, troubleshooting guide, and maintenance procedures. Add CI/CD pipeline configuration files for automated deployment.",
+            "status": "pending",
+            "testStrategy": "Test deployment process on cloud provider, verify application accessibility, confirm backup and restore procedures work, validate monitoring and alerting setup"
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-27T05:19:59.208Z",
+      "updated": "2025-08-27T05:19:59.208Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

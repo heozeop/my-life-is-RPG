@@ -1,0 +1,43 @@
+# Task ID: 12
+# Title: Implement Dashboard API with Aggregated Data
+# Status: pending
+# Dependencies: 11
+# Priority: medium
+# Description: Create comprehensive dashboard API combining character, quest, and fortune data
+# Details:
+Implement DashboardController with GET /api/dashboard endpoint. Create DashboardService that aggregates: user's main character stats, current week's quests (pending/completed), today's fortune and active buffs, recent achievements, life percentage, current stage info. Optimize with single database queries where possible. Add caching for frequently accessed data. Include quest completion statistics (weekly/monthly progress). Add level progress visualization data. Create comprehensive DashboardResponse DTO with all aggregated information. Implement efficient data fetching to minimize database calls.
+
+# Test Strategy:
+Test dashboard returns all required data correctly, performance is acceptable with multiple data sources, caching works properly, data is current and accurate.
+
+# Subtasks:
+## 1. Create DashboardResponse DTO and Data Models [pending]
+### Dependencies: None
+### Description: Design and implement comprehensive data transfer objects for dashboard API response containing all aggregated information
+### Details:
+Create DashboardResponse DTO with nested objects for character stats, quest summaries, fortune data, achievements, life metrics, and stage information. Include CharacterStatsDto (level, experience, health, attack, defense, equipped items), QuestSummaryDto (pending/completed counts, weekly/monthly progress), FortuneDto (today's fortune, active buffs), AchievementDto (recent achievements list), LifeMetricsDto (life percentage, remaining time, current stage), and LevelProgressDto (current level progress, next level requirements). Ensure all DTOs are properly annotated for JSON serialization.
+
+## 2. Implement DashboardService Core Data Aggregation [pending]
+### Dependencies: 12.1
+### Description: Create service layer to aggregate data from multiple sources including character, quest, fortune, and achievement systems
+### Details:
+Implement DashboardService with methods to fetch and aggregate data from CharacterService, QuestService, FortuneService, AchievementService, LifeCounterService, and StageService. Create aggregateUserDashboard(userId) method that combines: user's main character stats with equipped items, current week's quests (pending/completed counts), today's fortune and active buffs, recent achievements (last 5), life percentage and remaining time calculations, current stage information, and level progress data. Implement error handling for missing or invalid data.
+
+## 3. Optimize Database Queries and Add Caching Layer [pending]
+### Dependencies: 12.2
+### Description: Implement efficient database queries and caching mechanism to minimize database calls and improve performance
+### Details:
+Optimize database queries by implementing batch fetching where possible, using JOIN queries to reduce database roundtrips for related data (character with equipped items, quests with completion status). Implement Redis caching for frequently accessed dashboard data with 5-minute TTL. Create cache keys based on userId and implement cache invalidation strategies when user data changes (quest completion, character level up, item equipment). Add database query optimization for quest statistics (weekly/monthly progress) using efficient date range queries and aggregation functions.
+
+## 4. Implement Quest Statistics and Progress Visualization [pending]
+### Dependencies: 12.2
+### Description: Add comprehensive quest completion statistics and level progress visualization data to dashboard
+### Details:
+Implement quest statistics calculation including weekly progress (completed quests this week vs total available), monthly progress tracking, quest completion streaks, and quest type distribution (daily/weekly/special). Add level progress visualization data including current level, experience points, experience needed for next level, progress percentage, and estimated time to next level based on average daily experience gain. Create efficient queries to calculate these statistics without impacting performance, using database aggregation functions and date-based filtering.
+
+## 5. Create DashboardController and API Endpoint [pending]
+### Dependencies: 12.1, 12.2, 12.3, 12.4
+### Description: Implement REST controller with GET /api/dashboard endpoint and integrate all dashboard functionality
+### Details:
+Create DashboardController with GET /api/dashboard endpoint that requires authentication and returns comprehensive dashboard data. Implement proper error handling, request validation, and response formatting. Add API documentation with Swagger annotations describing all response fields. Implement rate limiting to prevent excessive dashboard requests. Add logging for dashboard access patterns and performance monitoring. Ensure the endpoint handles edge cases like new users with minimal data, users without characters, or missing fortune data gracefully.
+

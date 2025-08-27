@@ -1,0 +1,43 @@
+# Task ID: 5
+# Title: Implement Character CRUD Operations
+# Status: pending
+# Dependencies: 4
+# Priority: high
+# Description: Create character management system with CRUD operations and EXP/level mechanics
+# Details:
+Implement CharacterController with endpoints: GET /api/characters (list user's characters), POST /api/characters (create new character), GET /api/characters/{id}, PUT /api/characters/{id}, DELETE /api/characters/{id}. Create CharacterService with level calculation logic: level = floor(sqrt(exp/100)). Implement stat calculation based on level: base stats + level multipliers. Add character creation validation (name uniqueness per user, initial stats). Create DTOs: CharacterRequest, CharacterResponse, CharacterStatsResponse. Implement experience gain method: addExperience(amount) with automatic level up.
+
+# Test Strategy:
+Test CRUD operations work correctly, EXP to level conversion is accurate, stat calculations are correct, user can only access their own characters.
+
+# Subtasks:
+## 1. Create Character DTOs and Request/Response Models [pending]
+### Dependencies: None
+### Description: Design and implement data transfer objects for character operations including request validation and response formatting
+### Details:
+Create CharacterRequest DTO with fields: name (required, 3-50 chars), description (optional, max 500 chars). Create CharacterResponse DTO with fields: id, name, description, level, experience, createdAt, updatedAt. Create CharacterStatsResponse DTO with fields: characterId, level, baseStats (hp, attack, defense), levelMultipliers, totalStats (calculated). Add validation annotations: @NotBlank for name, @Size constraints, @Valid for nested objects. Include Jackson annotations for JSON serialization.
+
+## 2. Implement Character Entity and Repository Layer [pending]
+### Dependencies: 5.1
+### Description: Create Character entity with database mapping and repository interface for data persistence
+### Details:
+Create Character entity with fields: id (Long, auto-generated), name (String, not null), description (String), experience (Integer, default 0), userId (Long, foreign key), createdAt, updatedAt (timestamps). Add JPA annotations: @Entity, @Table with unique constraint on (name, userId), @ManyToOne relationship to User. Create CharacterRepository extending JpaRepository with custom methods: findByUserId(Long userId), findByUserIdAndId(Long userId, Long id), existsByUserIdAndName(Long userId, String name).
+
+## 3. Implement Character Service with Level and Stats Logic [pending]
+### Dependencies: 5.2
+### Description: Create service layer with business logic for character management, level calculation, and stat computation
+### Details:
+Create CharacterService with methods: createCharacter(userId, request), getCharactersByUser(userId), getCharacterById(userId, characterId), updateCharacter(userId, characterId, request), deleteCharacter(userId, characterId). Implement level calculation: level = floor(sqrt(experience/100)). Implement stat calculation with base stats (HP: 100, Attack: 10, Defense: 5) and level multipliers (HP: +20/level, Attack: +3/level, Defense: +2/level). Add addExperience(characterId, amount) method with automatic level up detection. Include name uniqueness validation per user.
+
+## 4. Create Character Controller with REST Endpoints [pending]
+### Dependencies: 5.3
+### Description: Implement REST controller with all CRUD endpoints for character management
+### Details:
+Create CharacterController with endpoints: GET /api/characters (returns user's characters list), POST /api/characters (creates new character with validation), GET /api/characters/{id} (returns specific character if owned by user), PUT /api/characters/{id} (updates character if owned by user), DELETE /api/characters/{id} (deletes character if owned by user). Add @RestController, @RequestMapping('/api/characters'), @Autowired CharacterService. Include proper HTTP status codes: 200 for success, 201 for creation, 404 for not found, 403 for unauthorized access. Add request/response body validation with @Valid annotation.
+
+## 5. Implement Experience Gain System and Integration Testing [pending]
+### Dependencies: 5.4
+### Description: Complete the character system with experience gain functionality and comprehensive integration testing
+### Details:
+Add POST /api/characters/{id}/experience endpoint to CharacterController for gaining experience. Implement experience gain logic in service layer with automatic level up detection and stat recalculation. Add experience gain validation (positive amounts only, reasonable limits). Create integration tests covering full CRUD workflow: character creation, retrieval, updates, deletion, and experience gain. Test user isolation (users cannot access other users' characters). Add error handling for edge cases: character not found, unauthorized access, invalid experience amounts.
+

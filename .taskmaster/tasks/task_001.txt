@@ -1,0 +1,43 @@
+# Task ID: 1
+# Title: Setup Spring Boot Kotlin Project with Dependencies
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Initialize Spring Boot project with Kotlin, Exposed ORM, MySQL connector, and required dependencies
+# Details:
+Create Spring Boot project using Spring Initializr with Kotlin language. Add dependencies: spring-boot-starter-web, spring-boot-starter-data-jpa, exposed-core, exposed-dao, exposed-jdbc, exposed-spring-boot-starter, mysql-connector-java, HikariCP, spring-boot-starter-security (for password hashing), kotlin-reflect. Configure application.yml with MySQL connection settings for free tier (HikariCP poolSize ≤ 5). Setup project structure with packages: controller, service, repository, model, config, filter.
+
+# Test Strategy:
+Verify project builds successfully, Spring Boot starts without errors, and database connection can be established. Test with simple health check endpoint.
+
+# Subtasks:
+## 1. Initialize Spring Boot Project with Kotlin [pending]
+### Dependencies: None
+### Description: Create a new Spring Boot project using Spring Initializr with Kotlin language support and basic web dependencies
+### Details:
+Use Spring Initializr (start.spring.io) to generate project with: Spring Boot 3.x, Kotlin language, Gradle build system, Java 17+. Add initial dependencies: spring-boot-starter-web, spring-boot-starter-actuator for health checks. Set project metadata: group=com.example, artifact=rpg-api, name=RPG API, package=com.example.rpgapi. Download and extract the project. Verify the project structure includes src/main/kotlin and src/test/kotlin directories.
+
+## 2. Add Database and ORM Dependencies [pending]
+### Dependencies: None
+### Description: Configure build.gradle.kts with all required dependencies for database connectivity and Exposed ORM
+### Details:
+Add dependencies to build.gradle.kts: spring-boot-starter-data-jpa, exposed-core, exposed-dao, exposed-jdbc, exposed-spring-boot-starter, mysql-connector-java, HikariCP, spring-boot-starter-security, kotlin-reflect. Specify versions: Exposed 0.44.1+, MySQL Connector 8.0.33+. Add kotlin-spring and kotlin-jpa plugins. Configure kotlin compiler options for JVM target 17. Add testImplementation dependencies for testing database operations.
+
+## 3. Configure Database Connection Settings [pending]
+### Dependencies: None
+### Description: Setup application.yml with MySQL database configuration optimized for free tier usage
+### Details:
+Create src/main/resources/application.yml with database configuration: spring.datasource.url, username, password placeholders. Configure HikariCP with maxPoolSize=5, connectionTimeout=30000ms, idleTimeout=600000ms, maxLifetime=1800000ms for free tier optimization. Add exposed configuration: exposed.spring.show-sql=true for development. Create application-dev.yml and application-prod.yml profiles. Set logging levels for SQL queries and connection pool monitoring.
+
+## 4. Setup Project Package Structure [pending]
+### Dependencies: None
+### Description: Create organized package structure with proper separation of concerns for the RPG API application
+### Details:
+Create package structure under src/main/kotlin/com/example/rpgapi: controller/ for REST endpoints, service/ for business logic, repository/ for data access, model/ for entity classes, config/ for configuration classes, filter/ for request/response filters, dto/ for data transfer objects, exception/ for custom exceptions. Create corresponding test packages under src/test/kotlin. Add package-info.kt files with documentation for each package explaining its purpose.
+
+## 5. Create Basic Application Configuration and Health Check [pending]
+### Dependencies: None
+### Description: Setup main application class, basic configuration, and verify the complete project setup works
+### Details:
+Create main Application.kt class with @SpringBootApplication annotation. Add basic @Configuration class in config package for database and security setup. Create a simple HealthController in controller package with @RestController and basic health endpoint returning application status. Add @EnableJpaRepositories and @EnableExposedRepositories annotations. Configure basic security to allow health check access. Add application startup logging to verify all components initialize correctly.
+
