@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: MyLiftIsRPG
+    
+  datasource:
+    url: jdbc:mysql://localhost:3306/mydatabase
+    username: myuser
+    password: secret
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    
+    # HikariCP configuration optimized for free tier
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: MyLiftIsRPG-HikariPool
+        
+  # Exposed ORM configuration
+  exposed:
+    show-sql: true
+    generate-ddl: true
+    
+  # JOOQ configuration  
+  jooq:
+    sql-dialect: MYSQL
+    
+# Actuator configuration for health checks
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      
+# Logging configuration
+logging:
+  level:
+    com.mylifeisrpg: DEBUG
+    org.springframework.web: DEBUG
+    org.jetbrains.exposed: DEBUG
+    com.zaxxer.hikari: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

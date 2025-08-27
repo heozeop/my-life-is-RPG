@@ -1,9 +1,11 @@
-package com.mylifeisrpg.myliftisrpg
+package com.mylifeisrpg.myliftisrpg.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
@@ -15,11 +17,16 @@ class SecurityConfig {
         http
             .authorizeHttpRequests { authorize ->
                 authorize
-                    .requestMatchers("/", "/api/**").permitAll()
+                    .requestMatchers("/", "/api/**", "/actuator/**", "/health").permitAll()
                     .anyRequest().authenticated()
             }
             .csrf { it.disable() }
         
         return http.build()
+    }
+    
+    @Bean
+    fun passwordEncoder(): PasswordEncoder {
+        return BCryptPasswordEncoder()
     }
 }

@@ -4,57 +4,57 @@
       {
         "id": 1,
         "title": "Setup Spring Boot Kotlin Project with Dependencies",
-        "description": "Initialize Spring Boot project with Kotlin, Exposed ORM, MySQL connector, and required dependencies",
-        "details": "Create Spring Boot project using Spring Initializr with Kotlin language. Add dependencies: spring-boot-starter-web, spring-boot-starter-data-jpa, exposed-core, exposed-dao, exposed-jdbc, exposed-spring-boot-starter, mysql-connector-java, HikariCP, spring-boot-starter-security (for password hashing), kotlin-reflect. Configure application.yml with MySQL connection settings for free tier (HikariCP poolSize ≤ 5). Setup project structure with packages: controller, service, repository, model, config, filter.",
-        "testStrategy": "Verify project builds successfully, Spring Boot starts without errors, and database connection can be established. Test with simple health check endpoint.",
-        "priority": "high",
+        "description": "Initialize Spring Boot project with Kotlin, Exposed ORM, JOOQ, MySQL connector, and required dependencies",
+        "status": "done",
         "dependencies": [],
-        "status": "pending",
+        "priority": "high",
+        "details": "Create Spring Boot project using Spring Initializr with Kotlin language. Add dependencies: spring-boot-starter-web, exposed-core, exposed-dao, exposed-jdbc, exposed-spring-boot-starter, jooq, jooq-kotlin, mysql-connector-java, HikariCP, spring-boot-starter-security (for password hashing), kotlin-reflect. Configure application.yml with MySQL connection settings for free tier (HikariCP poolSize ≤ 5). Setup project structure with packages: controller, service, repository, model, config, filter. Use pure Exposed and JOOQ for database operations without JPA.",
+        "testStrategy": "Verify project builds successfully, Spring Boot starts without errors, and database connection can be established using Exposed and JOOQ. Test with simple health check endpoint.",
         "subtasks": [
           {
             "id": 1,
             "title": "Initialize Spring Boot Project with Kotlin",
             "description": "Create a new Spring Boot project using Spring Initializr with Kotlin language support and basic web dependencies",
+            "status": "done",
             "dependencies": [],
             "details": "Use Spring Initializr (start.spring.io) to generate project with: Spring Boot 3.x, Kotlin language, Gradle build system, Java 17+. Add initial dependencies: spring-boot-starter-web, spring-boot-starter-actuator for health checks. Set project metadata: group=com.example, artifact=rpg-api, name=RPG API, package=com.example.rpgapi. Download and extract the project. Verify the project structure includes src/main/kotlin and src/test/kotlin directories.",
-            "status": "pending",
             "testStrategy": "Verify project builds with './gradlew build' and Spring Boot application starts successfully with './gradlew bootRun'. Check that actuator health endpoint responds at /actuator/health."
           },
           {
             "id": 2,
             "title": "Add Database and ORM Dependencies",
-            "description": "Configure build.gradle.kts with all required dependencies for database connectivity and Exposed ORM",
+            "description": "Configure build.gradle.kts with Exposed ORM, JOOQ, and database connectivity dependencies (no JPA)",
+            "status": "done",
             "dependencies": [],
-            "details": "Add dependencies to build.gradle.kts: spring-boot-starter-data-jpa, exposed-core, exposed-dao, exposed-jdbc, exposed-spring-boot-starter, mysql-connector-java, HikariCP, spring-boot-starter-security, kotlin-reflect. Specify versions: Exposed 0.44.1+, MySQL Connector 8.0.33+. Add kotlin-spring and kotlin-jpa plugins. Configure kotlin compiler options for JVM target 17. Add testImplementation dependencies for testing database operations.",
-            "status": "pending",
-            "testStrategy": "Run './gradlew dependencies' to verify all dependencies resolve correctly. Build project to ensure no dependency conflicts exist."
+            "details": "Add dependencies to build.gradle.kts: exposed-core, exposed-dao, exposed-jdbc, exposed-spring-boot-starter, jooq, jooq-kotlin, mysql-connector-java, HikariCP, spring-boot-starter-security, kotlin-reflect. Specify versions: Exposed 0.44.1+, JOOQ 3.18+, MySQL Connector 8.0.33+. Add kotlin-spring plugin (remove kotlin-jpa plugin). Configure kotlin compiler options for JVM target 17. Add JOOQ code generation plugin configuration. Add testImplementation dependencies for testing database operations with Exposed and JOOQ.",
+            "testStrategy": "Run './gradlew dependencies' to verify all dependencies resolve correctly. Build project to ensure no dependency conflicts exist. Verify JOOQ code generation works."
           },
           {
             "id": 3,
             "title": "Configure Database Connection Settings",
-            "description": "Setup application.yml with MySQL database configuration optimized for free tier usage",
+            "description": "Setup application.yml with MySQL database configuration optimized for free tier usage with Exposed and JOOQ",
+            "status": "done",
             "dependencies": [],
-            "details": "Create src/main/resources/application.yml with database configuration: spring.datasource.url, username, password placeholders. Configure HikariCP with maxPoolSize=5, connectionTimeout=30000ms, idleTimeout=600000ms, maxLifetime=1800000ms for free tier optimization. Add exposed configuration: exposed.spring.show-sql=true for development. Create application-dev.yml and application-prod.yml profiles. Set logging levels for SQL queries and connection pool monitoring.",
-            "status": "pending",
-            "testStrategy": "Test database connection by starting application with valid MySQL credentials. Verify HikariCP pool initializes with correct settings through actuator metrics."
+            "details": "Create src/main/resources/application.yml with database configuration: spring.datasource.url, username, password placeholders. Configure HikariCP with maxPoolSize=5, connectionTimeout=30000ms, idleTimeout=600000ms, maxLifetime=1800000ms for free tier optimization. Add exposed configuration: exposed.spring.show-sql=true for development. Remove all JPA/Hibernate configurations. Add JOOQ configuration settings. Create application-dev.yml and application-prod.yml profiles. Set logging levels for SQL queries and connection pool monitoring.",
+            "testStrategy": "Test database connection by starting application with valid MySQL credentials. Verify HikariCP pool initializes with correct settings through actuator metrics. Confirm Exposed and JOOQ can connect successfully."
           },
           {
             "id": 4,
             "title": "Setup Project Package Structure",
-            "description": "Create organized package structure with proper separation of concerns for the RPG API application",
+            "description": "Create organized package structure with proper separation of concerns for the RPG API application using Exposed and JOOQ",
+            "status": "done",
             "dependencies": [],
-            "details": "Create package structure under src/main/kotlin/com/example/rpgapi: controller/ for REST endpoints, service/ for business logic, repository/ for data access, model/ for entity classes, config/ for configuration classes, filter/ for request/response filters, dto/ for data transfer objects, exception/ for custom exceptions. Create corresponding test packages under src/test/kotlin. Add package-info.kt files with documentation for each package explaining its purpose.",
-            "status": "pending",
+            "details": "Create package structure under src/main/kotlin/com/example/rpgapi: controller/ for REST endpoints, service/ for business logic, repository/ for data access using Exposed and JOOQ, model/ for entity classes, config/ for configuration classes, filter/ for request/response filters, dto/ for data transfer objects, exception/ for custom exceptions, jooq/ for JOOQ generated classes. Create corresponding test packages under src/test/kotlin. Add package-info.kt files with documentation for each package explaining its purpose.",
             "testStrategy": "Verify package structure is created correctly and follows Spring Boot conventions. Create simple placeholder classes in each package to ensure they compile."
           },
           {
             "id": 5,
             "title": "Create Basic Application Configuration and Health Check",
-            "description": "Setup main application class, basic configuration, and verify the complete project setup works",
+            "description": "Setup main application class, basic configuration for Exposed/JOOQ, and verify the complete project setup works",
+            "status": "done",
             "dependencies": [],
-            "details": "Create main Application.kt class with @SpringBootApplication annotation. Add basic @Configuration class in config package for database and security setup. Create a simple HealthController in controller package with @RestController and basic health endpoint returning application status. Add @EnableJpaRepositories and @EnableExposedRepositories annotations. Configure basic security to allow health check access. Add application startup logging to verify all components initialize correctly.",
-            "status": "pending",
-            "testStrategy": "Start the application and verify: Spring Boot starts without errors, database connection is established, health check endpoint responds at /health, actuator endpoints are accessible, no bean creation failures occur during startup."
+            "details": "Create main Application.kt class with @SpringBootApplication annotation. Add basic @Configuration class in config package for database and security setup using Exposed and JOOQ (remove JPA configurations). Create a simple HealthController in controller package with @RestController and basic health endpoint returning application status. Add @EnableExposedRepositories annotation (remove @EnableJpaRepositories). Configure JOOQ DSLContext bean. Configure basic security to allow health check access. Add application startup logging to verify all components initialize correctly.",
+            "testStrategy": "Start the application and verify: Spring Boot starts without errors, database connection is established via Exposed and JOOQ, health check endpoint responds at /health, actuator endpoints are accessible, no bean creation failures occur during startup, JOOQ DSLContext is properly configured."
           }
         ]
       },
@@ -68,7 +68,7 @@
         "dependencies": [
           1
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
@@ -1018,7 +1018,7 @@
     ],
     "metadata": {
       "created": "2025-08-27T05:19:59.208Z",
-      "updated": "2025-08-27T05:19:59.208Z",
+      "updated": "2025-08-27T05:48:11.754Z",
       "description": "Tasks for master context"
     }
   }
