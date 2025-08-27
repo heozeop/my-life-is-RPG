@@ -68,7 +68,7 @@
         "dependencies": [
           1
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -76,7 +76,7 @@
             "description": "Create all required MySQL database tables with proper column definitions, data types, and constraints",
             "dependencies": [],
             "details": "Create SQL DDL scripts for all tables: Users (id BIGINT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(50) UNIQUE NOT NULL, password_hash VARCHAR(255) NOT NULL, api_key VARCHAR(255) UNIQUE NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP), Characters (id BIGINT AUTO_INCREMENT PRIMARY KEY, user_id BIGINT NOT NULL, name VARCHAR(100) NOT NULL, level INT DEFAULT 1, exp BIGINT DEFAULT 0, hp INT DEFAULT 100, attack INT DEFAULT 10, defense INT DEFAULT 5, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP), Items (id BIGINT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100) NOT NULL, type ENUM('WEAPON', 'ARMOR', 'ACCESSORY') NOT NULL, rarity ENUM('COMMON', 'RARE', 'EPIC', 'LEGENDARY') NOT NULL, stat_bonus JSON, description TEXT), Inventories (id BIGINT AUTO_INCREMENT PRIMARY KEY, user_id BIGINT NOT NULL, item_id BIGINT NOT NULL, quantity INT DEFAULT 1, equipped_slot VARCHAR(20)), Quests (id BIGINT AUTO_INCREMENT PRIMARY KEY, user_id BIGINT NOT NULL, title VARCHAR(200) NOT NULL, description TEXT, type ENUM('DAILY', 'WEEKLY', 'STORY') NOT NULL, reward_exp INT DEFAULT 0, reward_coins INT DEFAULT 0, completed BOOLEAN DEFAULT FALSE, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP), CompletedQuests (id BIGINT AUTO_INCREMENT PRIMARY KEY, user_id BIGINT NOT NULL, quest_id BIGINT NOT NULL, completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP), DailyBuffs (id BIGINT AUTO_INCREMENT PRIMARY KEY, user_id BIGINT NOT NULL, date DATE NOT NULL, buff_type ENUM('EXP', 'COINS', 'ATTACK', 'DEFENSE') NOT NULL, multiplier DECIMAL(3,2) DEFAULT 1.0), Stages (id BIGINT AUTO_INCREMENT PRIMARY KEY, age_start INT NOT NULL, age_end INT NOT NULL, title VARCHAR(100) NOT NULL, description TEXT). Execute scripts to create tables in MySQL database.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify all tables are created with correct structure using DESCRIBE statements, check constraints and indexes are properly applied"
           },
           {
@@ -87,7 +87,7 @@
               "2.1"
             ],
             "details": "Create Kotlin object classes extending Table for each database table: UsersTable, CharactersTable, ItemsTable, InventoriesTable, QuestsTable, CompletedQuestsTable, DailyBuffsTable, StagesTable. Define columns using appropriate Exposed column types (long(), varchar(), text(), datetime(), bool(), enumeration(), json()). Use column-level foreign key references only for PlanetScale compatibility - avoid table-level FK constraints. Example: val userId = long('user_id').references(UsersTable.id). Set proper primary keys using id columns. Configure table names to match database schema exactly.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify table objects compile correctly and column definitions match database schema exactly"
           },
           {
@@ -98,7 +98,7 @@
               "2.2"
             ],
             "details": "Add MySQL JDBC driver dependency to build.gradle.kts. Configure database connection in application.yml with properties: spring.datasource.url, username, password, driver-class-name. Setup HikariCP connection pool with appropriate settings for development (maxPoolSize=10, connectionTimeout=20000, idleTimeout=300000). Create DatabaseConfig class to initialize Exposed Database.connect() with DataSource. Configure transaction management using Spring's @Transactional annotation support. Add database initialization check to ensure connection is working properly.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test database connection is established successfully, Exposed can connect to MySQL, connection pool is configured correctly"
           },
           {
@@ -109,7 +109,7 @@
               "2.3"
             ],
             "details": "Create DAO classes for each table: UserDao, CharacterDao, ItemDao, InventoryDao, QuestDao, CompletedQuestDao, DailyBuffDao, StageDao. Implement basic CRUD operations using Exposed DSL: create(), findById(), findAll(), update(), delete(). Use transaction blocks for database operations. Implement specific query methods like findByUsername() for UserDao, findByUserId() for CharacterDao, etc. Handle nullable results properly with Kotlin null safety. Add proper exception handling for database constraints violations. Use ResultRow.toEntity() extension functions for mapping database rows to data classes.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test all CRUD operations work correctly, foreign key relationships are maintained at application level, proper exception handling for constraint violations"
           },
           {
@@ -120,7 +120,7 @@
               "2.4"
             ],
             "details": "Create data classes for each entity: User, Character, Item, Inventory, Quest, CompletedQuest, DailyBuff, Stage. Include all necessary properties matching database columns with appropriate Kotlin types (Long?, String, Int, LocalDateTime, Boolean, enums). Create repository interfaces: UserRepository, CharacterRepository, ItemRepository, etc. with method signatures for common operations. Implement repository classes using the DAO layer created in previous subtask. Add extension functions to convert between ResultRow and entity data classes. Configure proper JSON serialization for API responses using Jackson annotations. Add validation annotations where appropriate.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify entity classes serialize/deserialize correctly, repository methods return proper entity objects, all database operations work through repository layer"
           }
         ]
@@ -1018,7 +1018,7 @@
     ],
     "metadata": {
       "created": "2025-08-27T05:19:59.208Z",
-      "updated": "2025-08-27T05:48:11.754Z",
+      "updated": "2025-08-27T06:03:16.310Z",
       "description": "Tasks for master context"
     }
   }
