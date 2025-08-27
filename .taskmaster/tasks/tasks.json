@@ -135,7 +135,7 @@
         "dependencies": [
           2
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -143,7 +143,7 @@
             "description": "Implement the core authentication filter that extends OncePerRequestFilter to intercept HTTP requests and validate API keys",
             "dependencies": [],
             "details": "Create ApiKeyAuthenticationFilter class extending OncePerRequestFilter. Override doFilterInternal method to extract X-API-KEY header from HttpServletRequest. Implement logic to skip authentication for public endpoints (like /api/auth/login). If API key is present, create ApiKeyAuthenticationToken and pass to AuthenticationManager. If authentication succeeds, set SecurityContextHolder with authenticated user. If fails or missing, continue filter chain without authentication (let other components handle 401).",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit test filter extracts header correctly, creates proper authentication token, handles missing headers gracefully, skips public endpoints"
           },
           {
@@ -154,7 +154,7 @@
               "3.1"
             ],
             "details": "Create ApiKeyAuthenticationProvider implementing AuthenticationProvider. Override authenticate method to accept ApiKeyAuthenticationToken. Query Users table by api_key column to find matching user. If user found and active, create UsernamePasswordAuthenticationToken with user details and authorities. If not found, throw BadCredentialsException. Implement supports method to return true for ApiKeyAuthenticationToken class. Add proper error handling for database connection issues.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test valid API key returns authenticated user, invalid key throws BadCredentialsException, database errors are handled properly, user authorities are set correctly"
           },
           {
@@ -166,7 +166,7 @@
               "3.2"
             ],
             "details": "Update SecurityConfig class to register ApiKeyAuthenticationProvider with AuthenticationManager. Add ApiKeyAuthenticationFilter to security filter chain before UsernamePasswordAuthenticationFilter. Configure filter to apply to all API endpoints except public ones (/api/auth/**). Set up proper exception handling with AuthenticationEntryPoint for 401 responses. Configure CORS and CSRF settings appropriately for API key authentication. Ensure filter order doesn't conflict with existing authentication mechanisms.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration test that security chain processes API key authentication, proper 401 responses for invalid keys, CORS headers are set correctly, filter ordering works as expected"
           },
           {
@@ -175,7 +175,7 @@
             "description": "Create service methods for generating secure API keys and managing them in the Users table",
             "dependencies": [],
             "details": "Create ApiKeyService with generateApiKey method using SecureRandom and UUID for cryptographically secure keys. Format as 'ak_' + UUID.randomUUID().toString().replace('-', ''). Add method to update user's api_key column in database. Implement key rotation functionality for security. Add validation method to check key format and uniqueness. Create method to revoke API keys by setting to null. Ensure generated keys are URL-safe and have sufficient entropy (minimum 32 characters).",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test generated keys are unique and secure, key format validation works, database updates succeed, key rotation maintains user access, revocation works properly"
           },
           {
@@ -186,7 +186,7 @@
               "3.3"
             ],
             "details": "Create UserContextService with getCurrentUser method that extracts authenticated user from SecurityContextHolder. Add null checks and proper exception handling for unauthenticated requests. Create custom exceptions: InvalidApiKeyException, MissingApiKeyException. Implement GlobalExceptionHandler with @ExceptionHandler methods for authentication exceptions returning proper HTTP 401 status with JSON error responses. Add logging for authentication attempts and failures. Create utility methods for controllers to easily access current user information.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test current user extraction works in authenticated requests, proper 401 JSON responses for auth failures, exception handling covers all authentication scenarios, logging captures security events appropriately"
           }
         ]
@@ -1018,7 +1018,7 @@
     ],
     "metadata": {
       "created": "2025-08-27T05:19:59.208Z",
-      "updated": "2025-08-27T06:03:16.310Z",
+      "updated": "2025-08-27T06:16:52.827Z",
       "description": "Tasks for master context"
     }
   }

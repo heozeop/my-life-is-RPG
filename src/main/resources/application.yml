@@ -37,6 +37,15 @@ management:
     health:
       show-details: when-authorized
       
+# API Key Authentication Configuration
+app:
+  auth:
+    api-keys:
+      # Admin users (comma-separated: key:userId:username:roles)
+      admin: ${API_KEYS_ADMIN:ak_test123456789012345678901234567890:1:testuser:USER,ADMIN}
+      # Regular users (comma-separated: key:userId:username:roles) 
+      users: ${API_KEYS_USERS:ak_user456789012345678901234567890:2:regularuser:USER}
+      
 # Logging configuration
 logging:
   level:
